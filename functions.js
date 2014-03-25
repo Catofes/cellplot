@@ -343,9 +343,9 @@ function ThreeStart(init_t)
 	Init3D();
 	var axisHelper = new THREE.AxisHelper( 100 ); 
 	scene.add( axisHelper );
-	//AfterSlide(1)
-	//	animate();
-	//render();
+	AfterSlide(1)
+		animate();
+//	render();
 }	
 
 function PerformAction()
