@@ -1,0 +1,13 @@
+.cellplot{
+	cursor: pointer;
+	width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.cellplot .canvas{
+	width: 600px;
+	height: 400px;
+}
+.footer{
+	margin-top: 50px;
+}

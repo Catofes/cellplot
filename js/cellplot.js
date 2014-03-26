@@ -5,8 +5,47 @@
 //****************************************
 
 
+//***************************************
+//CellPlot is the basic class of cell plot
+//***************************************
+
 //The Init of the Class CellPlot
-function CellPlot(container)
+CellPlot=function(container){
+	this.width=container.clientWidth;
+	this.height=container.clientHeight;
+	this.container=container;
+	CP=this;
+
+	//Add Element CellPlot.Inof
+	var htmlinfo=document.createElement("div");
+	htmlinfo.className="info";
+	container.appendChild(htmlinfo);
+	this.info=new CellPlot.Info(htmlinfo);
+	
+	//Add Element CellPlot.Canvas
+	var htmlcanvas=document.createElement("div");
+	htmlcanvas.className="canvas";
+	container.appendChild(htmlcanvas);
+	this.canvas=new CellPlot.Canvas(htmlcanvas);
+
+	//Add Element CellPlot.Slide
+	var htmlslide=document.createElement("div");
+	htmlslide.id="CellPlot_Slide";
+	htmlslide.className="slide";
+	container.appendChild(htmlslide);
+	this.slide=new CellPlot.Slide(htmlslide);
+
+	this.control=new CellPlot.Control();
+	return this;
+}
+
+
+//*************************************
+//CellPlot.Canvas is the class to draw picture
+//*************************************
+
+//The Init of the Class CellPlot.Canvas
+CellPlot.Canvas=function(container)
 {
 	this.width=container.clientWidth;
 	this.height=container.clientHeight;
@@ -48,7 +87,6 @@ function CellPlot(container)
 	controls=this.controls;
 	camera=this.camera;
 	scene=this.scene;
-	GP=this;
 	//Setup other variates
 	
 	this.lines=[];
@@ -95,7 +133,7 @@ function CellPlot(container)
 				  console.log("clicked:" + intersects[ 0 ].object.name);
 				  //add to selected cell ids only when it is not there yet
 				  if ((selected_cellids).indexOf(intersects[ 0 ].object.cellid)<0)
-					GP.Addtoselected(intersects[ 0 ].object.cellid);
+					CP.canvas.Addtoselected(intersects[ 0 ].object.cellid);
 				  SELECTED[SELECTED.length] = intersects[ 0 ].object
 					  //if (event.button===rightClick)
 					  //{console.log("right")}
@@ -103,9 +141,11 @@ function CellPlot(container)
 			toappearstr='';
 			for (var c=0;c<selected_cellids.length;c++)
 			  toappearstr=toappearstr+","+cellnames[selected_cellids[c]];
-			$('#selectedcell').html(toappearstr);
+			//$('#selected_cell').html("sellected_cell:	"+toappearstr);
+			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
 			if (toappearstr==='')
-			  $('#displayneighor').html(toappearstr);
+			  //$('#displayneighor').html(toappearstr);
+			CP.info.ChangeElement("neighbors_of_select_cell","neighbor_of_select_cell:   "+toappearstr);
 		}
 		console.log("mouse down, current cells:"+ selected_cellids);
 	}
@@ -116,35 +156,36 @@ function CellPlot(container)
 
 	this.LoadData(1);
 	this.onAnimate();
-	return this;
+	//this.SlideBar();
 }
 
 //Function of Remove Lines from Scene
-CellPlot.prototype.ClearLines=function(){
+CellPlot.Canvas.prototype.ClearLines=function(){
 	for (var l=0; l<lines.length; l++)
 	  scene.remove(this.lines[l]);
 	lines=[];
 }
 
 //Function of Remove Triaggles from Scene
-CellPlot.prototype.ClearTriaggles=function(){
+CellPlot.Canvas.prototype.ClearTriaggles=function(){
 	for (var f=0; f<triangles.length;f++)
 	  scene.remove(this.triangles[f]);
 	triangles=[];
 }
 
 //Function of Remove Select Object from Scene
-CellPlot.prototype.ClearSelect=function()
+CellPlot.Canvas.prototype.ClearSelect=function()
 {
 	SELECTED=[];
 	this.ClearLines();
 	this.ClearTriaggles();
 }
 
-CellPlot.prototype.LoadData=function(para)
+CellPlot.Canvas.prototype.LoadData=function(para)
 {
 	cellplot=this;
 	current_tloc=para-1;
+	CP.info.ChangeElement("current_time","current time:	"+current_tloc);
 	this.ClearSelect();
 	for (var c=0;c<cellnum;c++)
 	  cellid_tocurrent[c]=-1;
@@ -193,7 +234,7 @@ CellPlot.prototype.LoadData=function(para)
 	}
 }
 
-CellPlot.prototype.DrawObject=function(inputlocs,cellids)
+CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 {
 	var current_cellnum=inputlocs.length;
 	//clear previous balls
@@ -212,7 +253,7 @@ CellPlot.prototype.DrawObject=function(inputlocs,cellids)
 	}
 }
 
-CellPlot.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
+CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
 	for (var c=0; c<givencellids.length;c++){
 		var cid=givencellids[c];
@@ -232,7 +273,7 @@ CellPlot.prototype.Colorcells=function(givencellids,colorpara)//one element: col
 
 
 //Function of Draw Object from Data
-CellPlot.prototype.onDraw=function()
+CellPlot.Canvas.prototype.onDraw=function()
 {
 	this.DrawObject(drawlocs[current_tloc],current_cellids[current_tloc]);
 	for (var c=0; c<current_cellids[current_tloc].length;c++)
@@ -246,7 +287,7 @@ CellPlot.prototype.onDraw=function()
 	  Showsegmentation();
 }
 
-CellPlot.prototype.onAnimate=function()
+CellPlot.Canvas.prototype.onAnimate=function()
 {
 	window.webkitRequestAnimationFrame(this.onAnimate.bind(this));
 	//requestAnimationFrame(this.onAnimate);
@@ -276,7 +317,8 @@ CellPlot.prototype.onAnimate=function()
 				if ( intersects[ 0 ].object.name){
 					INTERSECTED.material.color.setHex( highlightcolor );
 					// update text, if it has a "name" field.
-					$('#mouseovercell').html(intersects[ 0 ].object.name);
+					//$('#mouseovercell').html(intersects[ 0 ].object.name);
+					CP.info.ChangeElement("mouseover_cell","mouseover cell:	"+intersects[0].object.name);
 				}
 			}
 		}else{ // there are no intersections
@@ -285,25 +327,123 @@ CellPlot.prototype.onAnimate=function()
 				if (INTERSECTED.cellid && SELECTED.indexOf(INTERSECTED)<0)
 				  INTERSECTED.material.color.setHex( signedcolors[INTERSECTED.cellid]);
 				INTERSECTED = null;
-				$('#mouseovercell').html("");
+				//$('#mouseovercell').html("");
+				CP.info.ChangeElement("mouseover_cell","mouseover cell: ");
 			}
 		}
 		this.controls.update();
 	}
 }
 
-CellPlot.prototype.Addtoselected=function(cid)
+CellPlot.Canvas.prototype.Addtoselected=function(cid)
 {
 	if (selected_cellids.length==0||selected_cellids.indexOf(cid)<0){//not there yet
 		selected_cellids[selected_cellids.length]=cid;
 		var selected_cell_str=cellnames[selected_cellids[0]];
 		for (var s=1;s<selected_cellids.length;s++)
 		  selected_cell_str=selected_cell_str+','+cellnames[selected_cellids[s]];
-		$('#selectedcell').html(selected_cell_str);
-
+		//$('#selectedcell').html(selected_cell_str);
+		CP.info.ChangeElement("selected_cell","selected_cell:	"+selected_cell_str);
 		//change color of the newly added cell
 		this.Colorcells([cid],choosencolor);
 		//this.Colortreenode([cid],'yellow');
 	}
 }
 
+//*******************************
+//CellPlot.Info is the class to show infomation
+//*******************************
+
+//Init of the class
+CellPlot.Info=function(container)
+{
+	this.element=[];
+	this.container=container;
+
+	this.AddElement("current_time","current time:	");
+	this.AddElement("time_choosen","time choosen:	");
+	this.AddElement("mouseover_cell","mouseover cell:	");
+	this.AddElement("selected_cell","selected cell:	");
+	this.AddElement("neighbors_of_select_cell","neighbors of select cell:	");
+}
+
+//Create Element
+CellPlot.Info.prototype.AddElement=function(id,data)
+{
+	var ele=document.createElement("p");
+	ele.id=id;
+	ele.className="info";
+	ele.innerHTML=data;
+	this.container.appendChild(ele);
+	this.element[id]=ele;
+}
+
+//Change the Data
+CellPlot.Info.prototype.ChangeElement=function(id,data)
+{
+	this.element[id].innerHTML=data;
+}
+
+
+
+//***********************************
+//CellPlot.Slide is the class of slide to control time 
+//***********************************
+
+
+CellPlot.Slide=function(container)
+{
+	$('#CellPlot_Slide').slider(
+				{
+					range : "min",
+					value : rawtimelist[0],
+	min: rawtimelist[0],
+	max: rawtimelist[rawtimelist.length-1],
+	change: function(event,ui) { CP.canvas.LoadData(ui.value);} ,
+	slide : function(event,ui) { CP.info.ChangeElement("time_choosen","time choosen :"+ui.value);}  
+				});
+}
+
+
+//********************************
+//CellPlot.Control is the class to control the whole project
+//********************************
+
+
+CellPlot.Control=function()
+{
+	this.autoplay=null;
+	this.ifplay=false;
+}
+
+CellPlot.Control.prototype.MoveForward=function()
+{
+	var cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	$('#CellPlot_Slide').slider("value",cvalue+1)
+}
+
+CellPlot.Control.prototype.MoveBackward=function()
+{
+	var cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	$('#CellPlot_Slide').slider("value",cvalue-1)
+}
+
+CellPlot.Control.prototype.AutoPlay=function()
+{
+	this.autoplay=setInterval(this.MoveForward,1000);
+	this.ifplay=true;
+}
+
+CellPlot.Control.prototype.StopPlay=function()
+{
+	clearInterval(this.autoplay);
+	this.ifplay=false;
+}
+
+CellPlot.Control.prototype.PlayandPause=function()
+{
+	if(this.ifplay)
+	  this.StopPlay();
+	else
+	  this.AutoPlay();
+}
