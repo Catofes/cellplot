@@ -17,19 +17,19 @@ CellPlot=function(container){
 	CP=this;
 
 	//Add Element CellPlot.Inof
-	var htmlinfo=document.createElement("div");
+	htmlinfo=document.createElement("div");
 	htmlinfo.className="info";
 	container.appendChild(htmlinfo);
 	this.info=new CellPlot.Info(htmlinfo);
 	
 	//Add Element CellPlot.Canvas
-	var htmlcanvas=document.createElement("div");
+	htmlcanvas=document.createElement("div");
 	htmlcanvas.className="canvas";
 	container.appendChild(htmlcanvas);
 	this.canvas=new CellPlot.Canvas(htmlcanvas);
 
 	//Add Element CellPlot.Slide
-	var htmlslide=document.createElement("div");
+	htmlslide=document.createElement("div");
 	htmlslide.id="CellPlot_Slide";
 	htmlslide.className="slide";
 	container.appendChild(htmlslide);
@@ -38,7 +38,6 @@ CellPlot=function(container){
 	this.control=new CellPlot.Control();
 	return this;
 }
-
 
 //*************************************
 //CellPlot.Canvas is the class to draw picture
@@ -88,7 +87,7 @@ CellPlot.Canvas=function(container)
 	camera=this.camera;
 	scene=this.scene;
 	//Setup other variates
-	
+
 	this.lines=[];
 	this.triangles=[];
 
@@ -110,13 +109,13 @@ CellPlot.Canvas=function(container)
 	{
 		if (mouse_move.x<1 && mouse_move.y<1){
 			event.preventDefault();
-			var vector = new THREE.Vector3( mouse_move.x, mouse_move.y, 1 );
+			vector = new THREE.Vector3( mouse_move.x, mouse_move.y, 1 );
 			projector.unprojectVector( vector, camera );
-			var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+			ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 			// create an array containing all objects in the scene with which the ray intersects
-			var allinter = ray.intersectObjects( scene.children );
-			var intersects=[];
-			for (var i=0; i<allinter.length; i++){
+			allinter = ray.intersectObjects( scene.children );
+			intersects=[];
+			for (i=0; i<allinter.length; i++){
 				if (allinter[i].object.name){
 					intersects[intersects.length]=allinter[i];
 				}
@@ -139,13 +138,13 @@ CellPlot.Canvas=function(container)
 					  //{console.log("right")}
 			  }
 			toappearstr='';
-			for (var c=0;c<selected_cellids.length;c++)
+			for (c=0;c<selected_cellids.length;c++)
 			  toappearstr=toappearstr+","+cellnames[selected_cellids[c]];
 			//$('#selected_cell').html("sellected_cell:	"+toappearstr);
 			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
 			if (toappearstr==='')
 			  //$('#displayneighor').html(toappearstr);
-			CP.info.ChangeElement("neighbors_of_select_cell","neighbor_of_select_cell:   "+toappearstr);
+			  CP.info.ChangeElement("neighbors_of_select_cell","neighbors_of_select_cell:   "+toappearstr);
 		}
 		console.log("mouse down, current cells:"+ selected_cellids);
 	}
@@ -161,14 +160,14 @@ CellPlot.Canvas=function(container)
 
 //Function of Remove Lines from Scene
 CellPlot.Canvas.prototype.ClearLines=function(){
-	for (var l=0; l<lines.length; l++)
+	for (l=0; l<lines.length; l++)
 	  scene.remove(this.lines[l]);
 	lines=[];
 }
 
 //Function of Remove Triaggles from Scene
 CellPlot.Canvas.prototype.ClearTriaggles=function(){
-	for (var f=0; f<triangles.length;f++)
+	for (f=0; f<triangles.length;f++)
 	  scene.remove(this.triangles[f]);
 	triangles=[];
 }
@@ -187,40 +186,40 @@ CellPlot.Canvas.prototype.LoadData=function(para)
 	current_tloc=para-1;
 	CP.info.ChangeElement("current_time","current time:	"+current_tloc);
 	this.ClearSelect();
-	for (var c=0;c<cellnum;c++)
+	for (c=0;c<cellnum;c++)
 	  cellid_tocurrent[c]=-1;
 	if (!current_cellids[current_tloc]){// no data, need to load data
-		var fpath="./ajaxfolder/"+geneid+"/g"+geneid+"_t"+current_tloc+".txt"
+		fpath="./ajaxfolder/"+geneid+"/g"+geneid+"_t"+current_tloc+".txt"
 			console.log("load data from: "+fpath)
 			$.getJSON(fpath,function (data){
 				current_cellids[current_tloc]=data[0];
-				var current_cellnum=current_cellids[current_tloc].length;
+				current_cellnum=current_cellids[current_tloc].length;
 				drawlocs[current_tloc]=new Array(current_cellnum);
 				geneexp[current_tloc]=data[3];
-				for (var c=0; c<current_cellnum;c++){
+				for (c=0; c<current_cellnum;c++){
 					drawlocs[current_tloc][c]=new Array(3);
-					for (var k=0;k<3;k++)
+					for (k=0;k<3;k++)
 				drawlocs[current_tloc][c][k]= data[1][c][k]-0.5*(minloc[k]+maxloc[k]);	
 				}
-				var pairs=data[2][0];
-				var areas=data[2][1];
+				pairs=data[2][0];
+				areas=data[2][1];
 				//console.log(129+': pairs'+pairs)
 				contact_pairs[current_tloc]=new Array(current_cellnum);
 				contact_areas[current_tloc]=new Array(current_cellnum);
-				for (var c=0; c<current_cellnum;c++){
+				for (c=0; c<current_cellnum;c++){
 					contact_pairs[current_tloc][c]=[];
 					contact_areas[current_tloc][c]=[];
 				}
-				for (var p=0; p<pairs.length;p++){
+				for (p=0; p<pairs.length;p++){
 					//console.log("pair:" + pairs[p])
-					var cloc=[0,0]
-						for (var k=0; k<2;k++)
+					cloc=[0,0]
+						for (k=0; k<2;k++)
 						  cloc[k]= (current_cellids[current_tloc]).indexOf(pairs[p][k]);
 					// their position in the current_cellids[current_tloc]
-					var temploc=[cloc,[cloc[1],cloc[0]]];
-					for (var k=0;k<2;k++){
-						var a=temploc[k][0],b=temploc[k][1];
-						var clen=contact_areas[current_tloc][a].length
+					temploc=[cloc,[cloc[1],cloc[0]]];
+					for (k=0;k<2;k++){
+						a=temploc[k][0],b=temploc[k][1];
+						clen=contact_areas[current_tloc][a].length
 							contact_pairs[current_tloc][a][clen]=b;
 						contact_areas[current_tloc][a][clen]=areas[p]
 					}
@@ -234,16 +233,20 @@ CellPlot.Canvas.prototype.LoadData=function(para)
 	}
 }
 
+CellPlot.Canvas.prototype.ClearData=function(){
+	current_cellids=[];
+}
+
 CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 {
-	var current_cellnum=inputlocs.length;
+	current_cellnum=inputlocs.length;
 	//clear previous balls
-	for (var b=0;b<balls.length;b++)
+	for (b=0;b<balls.length;b++)
 	  scene.remove(balls[b]);
-    balls = new Array(current_cellnum);
-	for (var c=0;c<current_cellnum;c++){
+	balls = new Array(current_cellnum);
+	for (c=0;c<current_cellnum;c++){
 		cid=cellids[c];
-		var tempmaterial=new THREE.MeshLambertMaterial({color: signedcolors[cid]});
+		tempmaterial=new THREE.MeshLambertMaterial({color: signedcolors[cid]});
 		balls[c]=new THREE.Mesh(new THREE.SphereGeometry(10), tempmaterial);
 		balls[c].id=c;
 		balls[c].cellid= cid;
@@ -255,10 +258,10 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 
 CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
-	for (var c=0; c<givencellids.length;c++){
-		var cid=givencellids[c];
+	for (c=0; c<givencellids.length;c++){
+		cid=givencellids[c];
 		if (cellid_tocurrent[cid]>-1){
-			var tobecolorobject=scene.getObjectByName(cellnames[cid], true);
+			tobecolorobject=scene.getObjectByName(cellnames[cid], true);
 			if (tobecolorobject){
 				if (colorpara.length===0)//back to the original color
 				  tobecolorobject.material.color.setHex( signedcolors[cid]); 
@@ -276,7 +279,7 @@ CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one eleme
 CellPlot.Canvas.prototype.onDraw=function()
 {
 	this.DrawObject(drawlocs[current_tloc],current_cellids[current_tloc]);
-	for (var c=0; c<current_cellids[current_tloc].length;c++)
+	for (c=0; c<current_cellids[current_tloc].length;c++)
 	  cellid_tocurrent[current_cellids[current_tloc][c]]=c;
 	this.Colorcells(selected_cellids,choosencolor);//highlight cells in selection
 	if (showneighor)   
@@ -289,7 +292,7 @@ CellPlot.Canvas.prototype.onDraw=function()
 
 CellPlot.Canvas.prototype.onAnimate=function()
 {
-	window.webkitRequestAnimationFrame(this.onAnimate.bind(this));
+	window.requestAnimationFrame(this.onAnimate.bind(this));
 	//requestAnimationFrame(this.onAnimate);
 	//Update Renderer
 	this.renderer.clear();
@@ -297,13 +300,13 @@ CellPlot.Canvas.prototype.onAnimate=function()
 	this.renderer.render( scene, camera );
 	//Update Other
 	if (mouse_move.x<1 && mouse_move.y<1){
-		var vector = new THREE.Vector3( mouse_move.x, mouse_move.y, 1 );
+		vector = new THREE.Vector3( mouse_move.x, mouse_move.y, 1 );
 		projector.unprojectVector( vector, camera );
-		var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 		// create an array containing all objects in the scene with which the ray intersects
-		var allinter = ray.intersectObjects( scene.children );
-		var intersects=[];
-		for (var i=0; i<allinter.length; i++)
+		allinter = ray.intersectObjects( scene.children );
+		intersects=[];
+		for (i=0; i<allinter.length; i++)
 		  if (allinter[i].object.name)
 			intersects[intersects.length]=allinter[i];
 		if ( intersects.length > 0 ){
@@ -339,8 +342,8 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 {
 	if (selected_cellids.length==0||selected_cellids.indexOf(cid)<0){//not there yet
 		selected_cellids[selected_cellids.length]=cid;
-		var selected_cell_str=cellnames[selected_cellids[0]];
-		for (var s=1;s<selected_cellids.length;s++)
+		selected_cell_str=cellnames[selected_cellids[0]];
+		for (s=1;s<selected_cellids.length;s++)
 		  selected_cell_str=selected_cell_str+','+cellnames[selected_cellids[s]];
 		//$('#selectedcell').html(selected_cell_str);
 		CP.info.ChangeElement("selected_cell","selected_cell:	"+selected_cell_str);
@@ -370,7 +373,7 @@ CellPlot.Info=function(container)
 //Create Element
 CellPlot.Info.prototype.AddElement=function(id,data)
 {
-	var ele=document.createElement("p");
+	ele=document.createElement("p");
 	ele.id=id;
 	ele.className="info";
 	ele.innerHTML=data;
@@ -396,7 +399,7 @@ CellPlot.Slide=function(container)
 	$('#CellPlot_Slide').slider(
 				{
 					range : "min",
-					value : rawtimelist[0],
+	value : rawtimelist[0],
 	min: rawtimelist[0],
 	max: rawtimelist[rawtimelist.length-1],
 	change: function(event,ui) { CP.canvas.LoadData(ui.value);} ,
@@ -418,14 +421,19 @@ CellPlot.Control=function()
 
 CellPlot.Control.prototype.MoveForward=function()
 {
-	var cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
 	$('#CellPlot_Slide').slider("value",cvalue+1)
 }
 
 CellPlot.Control.prototype.MoveBackward=function()
 {
-	var cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
 	$('#CellPlot_Slide').slider("value",cvalue-1)
+}
+
+CellPlot.Control.prototype.Replay=function()
+{
+	$('#CellPlot_Slide').slider("value",1)
 }
 
 CellPlot.Control.prototype.AutoPlay=function()
@@ -447,3 +455,11 @@ CellPlot.Control.prototype.PlayandPause=function()
 	else
 	  this.AutoPlay();
 }
+CellPlot.Control.prototype.Reset=function()
+{
+	CP.canvas.ClearData();
+	CP.canvas.ClearSelect();
+	$('#CellPlot_Slide').slider("max",rawtimelist[rawtimelist.length-1]);
+	this.Replay();
+}
+
