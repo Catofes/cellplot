@@ -234,7 +234,7 @@ CellPlot.Canvas.prototype.LoadData=function(para)
 					contact_areas[current_tloc][a][clen]=areas[p];
 				}
 			}
-			if(!this.showseg)cellplot.onDraw();
+			if(!cellplot.showseg)cellplot.onDraw();
 		});
 	}
 	else{ // there is already data
@@ -445,7 +445,7 @@ CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighbor of selected
 		var ballid=cellid_tocurrent[cid];
 		if (ballid>-1){
 			allneibhorcellids[allneibhorcellids.length]=cid;
-			console.log(contact_pairs[current_tloc]);
+			//console.log(contact_pairs[current_tloc]);
 			var pstart=drawlocs[current_tloc][ballid];
 			console.log("in "+ current_tloc+", choosen to get neibhors of "+cellnames[cid]);
 			console.log("the neighbors are: "+contact_pairs[current_tloc][ballid]);
@@ -517,11 +517,30 @@ CellPlot.Canvas.prototype.ShowSegmentation=function()
 			var letters = '0123456789ABCDEF'.split('');
 			var color = '#';
 			for (var i = 0; i < 6; i++ )
-			  color += letters[Math.pow(s,i)%16];     
-			DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],color);
+			  color += letters[(Math.pow(s,3*i))%16];     
+			this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],color);
 		}
 	}
 
+}
+
+CellPlot.Canvas.prototype.ColorOffsprings=function()
+{
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=graycolor;
+	//change the color of cells's lineage
+	for (var c=0; c<selected_cellids.length;c++){   
+		cname=cellnames[selected_cellids[c]];
+		dfloc=(dfnames).indexOf(cname);
+		dfrange=offsprange[dfloc];
+		for (var d=dfrange[0]; d<dfrange[1]+1;d++)
+		{
+			dfname=dfnames[d-1];
+			loc=cellnames.indexOf(dfname);
+			signedcolors[loc]=highlightcolor;
+		}
+	}   
+	this.ColorCells(current_cellids[current_tloc],[]);
 }
 
 
@@ -612,6 +631,7 @@ CellPlot.Control.prototype.AutoPlay=function()
 {
 	this.autoplay=setInterval(this.MoveForward,1000);
 	this.ifplay=true;
+	CP.canvas.showseg=false;
 }
 
 CellPlot.Control.prototype.StopPlay=function()
@@ -631,7 +651,8 @@ CellPlot.Control.prototype.PlayandPause=function()
 CellPlot.Control.prototype.Reset=function()
 {
 	CP.canvas.ClearData();
-	CP.canvas.ClearSelect();
+	this.ClearSelection();
+	this.ClearColor();
 	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
 	this.Replay();
 }
@@ -648,6 +669,7 @@ CellPlot.Control.prototype.ClearColor=function()
 CellPlot.Control.prototype.ClearSelection=function()
 {
 	CP.canvas.ColorCells(selected_cellids,[]);
+	CP.canvas.ClearSelect();
 	//Colortreenode(selected_cellids,'black');
 	selected_cellids=[];
 	SELECTED=[];
@@ -665,14 +687,23 @@ CellPlot.Control.prototype.ColorbyCellType=function()
 CellPlot.Control.prototype.ColorbyGeneExp=function()
 {
 	this.ClearColor();
-	CP.canvas.bygeneexp=true;
+	CP.canvas.bygeneexp=!CP.canvas.bygeneexp;
 	CP.canvas.ByGeneExp();
 }
 
 CellPlot.Control.prototype.ShowNeighbor=function()
 {
-	CP.canvas.showneighbor=true;
-	CP.canvas.GetNeighbors();
+	CP.canvas.showneighbor=!CP.canvas.showneighbor;
+	CP.canvas.LoadData(current_tloc+1);
 }
 
+CellPlot.Control.prototype.ShowSeg=function()
+{
+	CP.canvas.showseg=!CP.canvas.showseg;
+	CP.canvas.LoadData(current_tloc+1);
+}
 
+CellPlot.Control.prototype.ShowOffsprings=function()
+{
+	CP.canvas.ColorOffsprings();
+}
