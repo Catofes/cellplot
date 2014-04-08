@@ -195,7 +195,7 @@ CellPlot.Canvas.prototype.LoadData=function(para)
 {
 	cellplot=this;
 	current_tloc=para-1;
-	CP.info.ChangeElement("current_time","current time:	"+current_tloc);
+	CP.info.ChangeElement("current_time","current time:	"+para);
 	this.ClearSelect();
 	for (c=0;c<cellnum;c++)
 	  cellid_tocurrent[c]=-1;
@@ -613,7 +613,11 @@ CellPlot.Control=function()
 CellPlot.Control.prototype.MoveForward=function()
 {
 	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
-	$('#CellPlot_Slide').slider("value",cvalue+1)
+	if(cvalue<rawtimelist[rawtimelist.length-1]){
+		$('#CellPlot_Slide').slider("value",cvalue+1);
+	}else{
+		CP.control.StopPlay();
+	}
 }
 
 CellPlot.Control.prototype.MoveBackward=function()
