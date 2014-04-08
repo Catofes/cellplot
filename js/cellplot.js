@@ -97,7 +97,8 @@ CellPlot.Canvas=function(container)
 
 	this.lines=[];
 	this.triangles=[];
-	this.showneighor=false;
+	this.trianglesobject=[];
+	this.showneighbor=false;
 	this.bygenexp=false;
 	this.showseg=false;
 
@@ -153,7 +154,7 @@ CellPlot.Canvas=function(container)
 			//$('#selected_cell').html("sellected_cell:	"+toappearstr);
 			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
 			if (toappearstr==='')
-			  //$('#displayneighor').html(toappearstr);
+			  //$('#displayneighbor').html(toappearstr);
 			  CP.info.ChangeElement("neighbors_of_select_cell","neighbors of select cell:   "+toappearstr);
 		}
 		console.log("mouse down, current cells:"+ selected_cellids);
@@ -177,9 +178,9 @@ CellPlot.Canvas.prototype.ClearLines=function(){
 
 //Function of Remove Triaggles from Scene
 CellPlot.Canvas.prototype.ClearTriaggles=function(){
-	for (f=0; f<triangles.length;f++)
+	for (f=0; f<this.triangles.length;f++)
 	  scene.remove(this.triangles[f]);
-	triangles=[];
+	this.triangles=[];
 }
 
 //Function of Remove Select Object from Scene
@@ -199,52 +200,83 @@ CellPlot.Canvas.prototype.LoadData=function(para)
 	for (c=0;c<cellnum;c++)
 	  cellid_tocurrent[c]=-1;
 	if (!current_cellids[current_tloc]){// no data, need to load data
-		fpath="./ajaxfolder/"+geneid+"/g"+geneid+"_t"+current_tloc+".txt"
-			console.log("load data from: "+fpath)
+		fpath="./ajaxfolder/"+geneid+"/g"+geneid+"_t"+current_tloc+".txt";
+		console.log("load data from: "+fpath);
+		$.getJSON(fpath,function (data){
+			current_cellids[current_tloc]=data[0];
+			current_cellnum=current_cellids[current_tloc].length;
+			drawlocs[current_tloc]=new Array(current_cellnum);
+			geneexp[current_tloc]=data[3];
+			for(c=0; c<current_cellnum;c++){
+				drawlocs[current_tloc][c]=new Array(3);
+				for(k=0;k<3;k++) drawlocs[current_tloc][c][k]= data[1][c][k]-0.5*(minloc[k]+maxloc[k]);	
+			}
+			pairs=data[2][0];
+			areas=data[2][1];
+			//console.log(129+': pairs'+pairs)
+			contact_pairs[current_tloc]=new Array(current_cellnum);
+			contact_areas[current_tloc]=new Array(current_cellnum);
+			for (c=0; c<current_cellnum;c++){
+				contact_pairs[current_tloc][c]=[];
+				contact_areas[current_tloc][c]=[];
+			}
+			for (p=0; p<pairs.length;p++){
+				//console.log("pair:" + pairs[p])
+				cloc=[0,0];
+				for (k=0; k<2;k++)
+				  cloc[k]= (current_cellids[current_tloc]).indexOf(pairs[p][k]);
+				// their position in the current_cellids[current_tloc]
+				temploc=[cloc,[cloc[1],cloc[0]]];
+				for (k=0;k<2;k++){
+					a=temploc[k][0],b=temploc[k][1];
+					clen=contact_areas[current_tloc][a].length;
+					contact_pairs[current_tloc][a][clen]=b;
+					contact_areas[current_tloc][a][clen]=areas[p];
+				}
+			}
+			if(!this.showseg)cellplot.onDraw();
+		});
+	}
+	else{ // there is already data
+		console.log("have data number:"+ drawlocs[current_tloc].length);
+		if(!this.showseg)this.onDraw();
+	}
+	if(this.showseg){
+		if (!segp_locs[current_tloc]){
+			var fpath="./ajaxfolder/"+geneid+"/s"+geneid+"_t"+current_tloc+".txt";
+			console.log("load seg information from:	"+fpath);
 			$.getJSON(fpath,function (data){
-				current_cellids[current_tloc]=data[0];
-				current_cellnum=current_cellids[current_tloc].length;
-				drawlocs[current_tloc]=new Array(current_cellnum);
-				geneexp[current_tloc]=data[3];
-				for (c=0; c<current_cellnum;c++){
-					drawlocs[current_tloc][c]=new Array(3);
-					for (k=0;k<3;k++)
-				drawlocs[current_tloc][c][k]= data[1][c][k]-0.5*(minloc[k]+maxloc[k]);	
+				segp_locs[current_tloc]=data[0];
+				segf_pids[current_tloc]=data[1];
+				segc_fids[current_tloc]=data[2];
+				for (var i=0; i<segp_locs[current_tloc].length;i++){
+					for (var k=0; k<3;k++){
+						segp_locs[current_tloc][i][k]=segp_locs[current_tloc][i][k]-0.5*(minloc[k]+maxloc[k]);
+					}
 				}
-				pairs=data[2][0];
-				areas=data[2][1];
-				//console.log(129+': pairs'+pairs)
-				contact_pairs[current_tloc]=new Array(current_cellnum);
-				contact_areas[current_tloc]=new Array(current_cellnum);
-				for (c=0; c<current_cellnum;c++){
-					contact_pairs[current_tloc][c]=[];
-					contact_areas[current_tloc][c]=[];
+				for (var i=0; i<(segf_pids[current_tloc]).length;i++){
+					for (var k=0; k<(segf_pids[current_tloc][i]).length; k++){
+						segf_pids[current_tloc][i][k]=segf_pids[current_tloc][i][k]-1;
+					}
 				}
-				for (p=0; p<pairs.length;p++){
-					//console.log("pair:" + pairs[p])
-					cloc=[0,0]
-						for (k=0; k<2;k++)
-						  cloc[k]= (current_cellids[current_tloc]).indexOf(pairs[p][k]);
-					// their position in the current_cellids[current_tloc]
-					temploc=[cloc,[cloc[1],cloc[0]]];
-					for (k=0;k<2;k++){
-						a=temploc[k][0],b=temploc[k][1];
-						clen=contact_areas[current_tloc][a].length
-							contact_pairs[current_tloc][a][clen]=b;
-						contact_areas[current_tloc][a][clen]=areas[p]
+
+				for (var i=0;i<(segc_fids[current_tloc]).length;i++){
+					for (var k=0; k<(segc_fids[current_tloc][i]).length;k++){
+						segc_fids[current_tloc][i][k]=segc_fids[current_tloc][i][k]-1;
 					}
 				}
 				cellplot.onDraw();
 			});
-	}
-	else{ // there is already data
-		console.log("have data number:"+ drawlocs[current_tloc].length)
-			this.onDraw();
+		}else{
+			console.log("have seg data number:"+current_tloc);
+			cellplot.onDraw();
+		}
 	}
 }
 
 CellPlot.Canvas.prototype.ClearData=function(){
 	current_cellids=[];
+	segp_locs=[];
 }
 
 CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
@@ -264,6 +296,26 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 		scene.add(balls[c]);
 		balls[c].position.set(inputlocs[c][0],inputlocs[c][1],inputlocs[c][2]);
 	}
+}
+
+CellPlot.Canvas.prototype.DrawTriaggles=function(p_locs,f_pids,fs,colorcode)
+{
+	for (var f=0; f<fs.length; f++){
+		var triangleGeometry = new THREE.Geometry();
+		for (var k=0;k<3;k++){
+			trianglepid=f_pids[fs[f]][k];
+			triangleploc=p_locs[trianglepid];
+			triangleGeometry.vertices.push(new THREE.Vector3(triangleploc[0],triangleploc[1],triangleploc[2]));
+		}
+		triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
+		trianglemterial=new THREE.MeshBasicMaterial({color:colorcode,side:THREE.DoubleSide,transparent : 1});
+		triid=this.triangles.length;
+		this.triangles[triid] = new THREE.Mesh(triangleGeometry,trianglemterial);
+		scene.add(this.triangles[triid]);
+		this.triangles[triid].material.opacity=0.2;
+		this.triangles[triid].prop="triangle";
+	}
+
 }
 
 CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one element: color the same, []:back to original color
@@ -292,12 +344,12 @@ CellPlot.Canvas.prototype.onDraw=function()
 	for (c=0; c<current_cellids[current_tloc].length;c++)
 	  cellid_tocurrent[current_cellids[current_tloc][c]]=c;
 	this.ColorCells(selected_cellids,choosencolor);//highlight cells in selection
-	if (this.showneighor)   
+	if (this.showneighbor)   
 	  this.GetNeighbors();
 	if (this.bygeneexp)
 	  this.ByGeneExp();
 	if (this.showseg)
-	  this.Showsegmentation();
+	  this.ShowSegmentation();
 }
 
 CellPlot.Canvas.prototype.onAnimate=function()
@@ -380,9 +432,8 @@ CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one eleme
 		}
 	}
 }
-CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighor of selected cells, color the neigbors, link a line, and display their names
+CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighbor of selected cells, color the neigbors, link a line, and display their names
 {
-	this.showneighor=true;
 	// clear lines each time they draw
 	this.ClearLines();
 	var l=0;
@@ -453,6 +504,27 @@ CellPlot.Canvas.prototype.ByGeneExp=function()
 	}
 	this.ColorCells(current_cellids[current_tloc],currentcolor);
 }
+
+CellPlot.Canvas.prototype.ShowSegmentation=function()
+{
+	for (i=0;i<this.triangles.length;i++)
+	  this.scene.remove(this.triangles[i]);
+	this.triangles=[];
+	for (var s=0; s<selected_cellids.length; s++){
+		var cloc=cellid_tocurrent[selected_cellids[s]];
+		if (cloc>-1)
+		{  
+			var letters = '0123456789ABCDEF'.split('');
+			var color = '#';
+			for (var i = 0; i < 6; i++ )
+			  color += letters[Math.pow(s,i)%16];     
+			DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],color);
+		}
+	}
+
+}
+
+
 //*******************************
 //CellPlot.Info is the class to show infomation
 //*******************************
@@ -566,7 +638,7 @@ CellPlot.Control.prototype.Reset=function()
 
 CellPlot.Control.prototype.ClearColor=function()
 {
-	CP.canvas.showneighor=false;
+	CP.canvas.showneighbor=false;
 	CP.canvas.bygeneexp=false;
 	for (var c=0; c<cellnum;c++)
 	  signedcolors[c]=graycolor;
@@ -596,3 +668,11 @@ CellPlot.Control.prototype.ColorbyGeneExp=function()
 	CP.canvas.bygeneexp=true;
 	CP.canvas.ByGeneExp();
 }
+
+CellPlot.Control.prototype.ShowNeighbor=function()
+{
+	CP.canvas.showneighbor=true;
+	CP.canvas.GetNeighbors();
+}
+
+
