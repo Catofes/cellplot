@@ -1,3 +1,4 @@
 *.txt
+/ajaxfloder/
 /three.js-master/
 /jquery-ui-1.10.4.custom/
