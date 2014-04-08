@@ -90,6 +90,9 @@ CellPlot.Canvas=function(container)
 
 	this.lines=[];
 	this.triangles=[];
+	this.showneighbor=false;
+	this.bygenexp=false;
+	this.showseg=false;
 
 	//**********************
 	//Private function below
@@ -144,7 +147,7 @@ CellPlot.Canvas=function(container)
 			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
 			if (toappearstr==='')
 			  //$('#displayneighor').html(toappearstr);
-			  CP.info.ChangeElement("neighbors_of_select_cell","neighbors_of_select_cell:   "+toappearstr);
+			  CP.info.ChangeElement("neighbors_of_select_cell","neighbors of select cell:   "+toappearstr);
 		}
 		console.log("mouse down, current cells:"+ selected_cellids);
 	}
@@ -160,9 +163,9 @@ CellPlot.Canvas=function(container)
 
 //Function of Remove Lines from Scene
 CellPlot.Canvas.prototype.ClearLines=function(){
-	for (l=0; l<lines.length; l++)
-	  scene.remove(this.lines[l]);
-	lines=[];
+	for (l=0; l<this.lines.length; l++)
+	  this.scene.remove(this.lines[l]);
+	this.lines=[];
 }
 
 //Function of Remove Triaggles from Scene
@@ -242,7 +245,7 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 	current_cellnum=inputlocs.length;
 	//clear previous balls
 	for (b=0;b<balls.length;b++)
-	  scene.remove(balls[b]);
+	this.scene.remove(balls[b]);
 	balls = new Array(current_cellnum);
 	for (c=0;c<current_cellnum;c++){
 		cid=cellids[c];
@@ -282,12 +285,12 @@ CellPlot.Canvas.prototype.onDraw=function()
 	for (c=0; c<current_cellids[current_tloc].length;c++)
 	  cellid_tocurrent[current_cellids[current_tloc][c]]=c;
 	this.Colorcells(selected_cellids,choosencolor);//highlight cells in selection
-	if (showneighor)   
-	  GetNeighbors();
-	if (bygeneexp)
-	  Bygeneexp();
-	if (showseg)
-	  Showsegmentation();
+	if (this.showneighor)   
+	  this.GetNeighbors();
+	if (this.bygeneexp)
+	  this.Bygeneexp();
+	if (this.showseg)
+	  this.Showsegmentation();
 }
 
 CellPlot.Canvas.prototype.onAnimate=function()
@@ -352,6 +355,78 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 		//this.Colortreenode([cid],'yellow');
 	}
 }
+
+CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
+{
+	for (var c=0; c<givencellids.length;c++){   
+		var cid=givencellids[c];
+		if (cellid_tocurrent[cid]>-1){
+			var tobecolorobject=this.scene.getObjectByName(cellnames[cid], true);
+			if (tobecolorobject){
+				if (colorpara.length===0)//back to the original color
+				  tobecolorobject.material.color.setHex( signedcolors[cid]); 
+				else if (colorpara.length===givencellids.length)// color things accordingly
+				  tobecolorobject.material.color.setHex( colorpara[c]); 
+				else // everything as one
+				  tobecolorobject.material.color.setHex( colorpara);
+			}
+		}
+	}
+}
+CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighor of selected cells, color the neigbors, link a line, and display their names
+{
+	this.showneighor=true;
+	// clear lines each time they draw
+	this.ClearLines();
+	var l=0;
+	var todisplay="";
+	var allneibhorcellids=[];
+	for (var c=0; c<selected_cellids.length;c++){
+		// check if the cell is still there
+		var cid=selected_cellids[c];
+		var ballid=cellid_tocurrent[cid];
+		if (ballid>-1){
+			allneibhorcellids[allneibhorcellids.length]=cid;
+			console.log(contact_pairs[current_tloc]);
+			var pstart=drawlocs[current_tloc][ballid];
+			console.log("in "+ current_tloc+", choosen to get neibhors of "+cellnames[cid]);
+			console.log("the neighbors are: "+contact_pairs[current_tloc][ballid]);
+			var pairid=contact_pairs[current_tloc][ballid];
+			for (var p=0;p<pairid.length;p++){
+				var pair_ballid=pairid[p];
+				//draw lines for this interaction, and line have attributes area
+				var lineGeometry = new THREE.Geometry();
+				var vertArray = lineGeometry.vertices;
+				var pend=drawlocs[current_tloc][pair_ballid];
+				vertArray.push( new THREE.Vector3(pstart[0],pstart[1],pstart[2]), new THREE.Vector3(pend[0],pend[1],pend[2]) );
+				lineGeometry.computeLineDistances();
+				var lineMaterial = new THREE.LineBasicMaterial( { color: linecolor} );
+				this.lines[l]= new THREE.Line( lineGeometry, lineMaterial );
+				this.lines[l].area=contact_areas[current_tloc][ballid];
+				scene.add(this.lines[l]);
+				allneibhorcellids[allneibhorcellids.length]=current_cellids[current_tloc][pair_ballid];
+				todisplay=todisplay+", "+balls[pair_ballid].name;
+				l=l+1;
+			}
+		}
+	}
+	CP.info.ChangeElement("neighbors_of_select_cell","neighbors_of_select_cell:   "+todisplay);	
+	var othercells=this.Allother_currentcells(allneibhorcellids);
+	//Transpcells(othercells,0.5);
+	//Transpcells(allneibhorcellids,1);
+}
+
+CellPlot.Canvas.prototype.Allother_currentcells=function(givencellids) // all the other current cells ids on the screen
+{
+	var othercells=[];
+	clist=current_cellids[current_tloc];
+	for (var c=0; c<clist.length;c++){
+		if ((givencellids).indexOf(clist[c])<0)// not exit
+		  othercells[othercells.length]=clist[c];
+	}
+	return othercells;
+}
+
 
 //*******************************
 //CellPlot.Info is the class to show infomation
@@ -459,7 +534,14 @@ CellPlot.Control.prototype.Reset=function()
 {
 	CP.canvas.ClearData();
 	CP.canvas.ClearSelect();
-	$('#CellPlot_Slide').slider("max",rawtimelist[rawtimelist.length-1]);
+	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
 	this.Replay();
 }
-
+CellPlot.Control.prototype.ClearColor=function()
+{
+	CP.canvas.showneighor=false;
+	CP.canvas.bygeneexp=false;
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=graycolor;
+	CP.canvas.Colorcells(current_cellids[current_tloc],[]);
+}
