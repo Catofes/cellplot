@@ -37,7 +37,7 @@
 				<li><a href="#">Wow</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a onclick="onSetting()" >设置</a></li>
+				<li><a onclick="onSetting()" >Change Genes</a></li>
 			</ul>
 
 		</div>
@@ -77,8 +77,19 @@
 			</button>
 			<ul class="dropdown-menu" role="menu">
 				<li><a onclick="document.cellplot.control.PlayandPause()" >Play/Pause</a></li>
-				<li><a onclick="document.cellplot.control.MoveForward()">MoveForward</a></li>
-				<li><a onclick="document.cellplot.control.MoveBackward()" >MoveBackward</a></li>
+				<li><a onclick="document.cellplot.control.MoveForward()">Move Forward</a></li>
+				<li><a onclick="document.cellplot.control.MoveBackward()" >Move Backward</a></li>
+			</ul>
+		</div>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Color Control <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a onclick="document.cellplot.control.ColorbyCellType()" >By CellType</a></li>
+				<li><a onclick="document.cellplot.control.ColorbyGeneExp()">By Gene Expression</a></li>
+				<li><a onclick="document.cellplot.control.ClearColor()">Clear Colors</a></li>
+				<li><a onclick="document.cellplot.control.ClearSelection()">Clear Selection</a></li>
 			</ul>
 		</div>
 	</div>

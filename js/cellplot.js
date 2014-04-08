@@ -39,6 +39,13 @@ CellPlot=function(container){
 	return this;
 }
 
+CellPlot.prototype.RGB2HTML=function(red, green, blue)
+{
+	var decColor =0x1000000+ blue + 0x100 * green + 0x10000 *red ;
+	return '#'+decColor.toString(16).substr(1);
+}
+
+
 //*************************************
 //CellPlot.Canvas is the class to draw picture
 //*************************************
@@ -90,7 +97,7 @@ CellPlot.Canvas=function(container)
 
 	this.lines=[];
 	this.triangles=[];
-	this.showneighbor=false;
+	this.showneighor=false;
 	this.bygenexp=false;
 	this.showseg=false;
 
@@ -126,7 +133,7 @@ CellPlot.Canvas=function(container)
 			//clear data unless Ctrl is pressed
 			//	 if (ctrlDown===false )
 			//	 {
-			//	  Colorcells(selected_cellids,[])
+			//	  ColorCells(selected_cellids,[])
 			//	  SELECTED=[];
 			//	  selected_cellids=[]
 			//	 }
@@ -245,7 +252,7 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 	current_cellnum=inputlocs.length;
 	//clear previous balls
 	for (b=0;b<balls.length;b++)
-	this.scene.remove(balls[b]);
+	  this.scene.remove(balls[b]);
 	balls = new Array(current_cellnum);
 	for (c=0;c<current_cellnum;c++){
 		cid=cellids[c];
@@ -259,7 +266,7 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 	}
 }
 
-CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
+CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
 	for (c=0; c<givencellids.length;c++){
 		cid=givencellids[c];
@@ -284,11 +291,11 @@ CellPlot.Canvas.prototype.onDraw=function()
 	this.DrawObject(drawlocs[current_tloc],current_cellids[current_tloc]);
 	for (c=0; c<current_cellids[current_tloc].length;c++)
 	  cellid_tocurrent[current_cellids[current_tloc][c]]=c;
-	this.Colorcells(selected_cellids,choosencolor);//highlight cells in selection
+	this.ColorCells(selected_cellids,choosencolor);//highlight cells in selection
 	if (this.showneighor)   
 	  this.GetNeighbors();
 	if (this.bygeneexp)
-	  this.Bygeneexp();
+	  this.ByGeneExp();
 	if (this.showseg)
 	  this.Showsegmentation();
 }
@@ -351,12 +358,12 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 		//$('#selectedcell').html(selected_cell_str);
 		CP.info.ChangeElement("selected_cell","selected_cell:	"+selected_cell_str);
 		//change color of the newly added cell
-		this.Colorcells([cid],choosencolor);
+		this.ColorCells([cid],choosencolor);
 		//this.Colortreenode([cid],'yellow');
 	}
 }
 
-CellPlot.Canvas.prototype.Colorcells=function(givencellids,colorpara)//one element: color the same, []:back to original color
+CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
 	for (var c=0; c<givencellids.length;c++){   
 		var cid=givencellids[c];
@@ -427,7 +434,25 @@ CellPlot.Canvas.prototype.Allother_currentcells=function(givencellids) // all th
 	return othercells;
 }
 
-
+CellPlot.Canvas.prototype.ByGeneExp=function()
+{
+	var currentcolor=new Array(current_cellids[current_tloc].length);
+	for (var c=0; c<current_cellids[current_tloc].length;c++){
+		var tempcolor=[];
+		if(isNaN(geneexp[current_tloc][c]))// not a number
+		  tempcolor=[100,100,100];
+		else{
+			for (var k=0; k<3;k++){
+				tempcolor[k]=Math.max(1,Math.min(255,Math.floor(300*(colortable[Math.floor(geneexp[current_tloc][c]*64)][k]))));
+			}
+			var tempv=CP.RGB2HTML(tempcolor[0],tempcolor[1],tempcolor[2]);
+			currentcolor[c]='0x';
+			currentcolor[c]=currentcolor[c]+tempv[1]+tempv[2]+tempv[3]+tempv[4]+tempv[5]+tempv[6];
+		}
+		signedcolors[current_cellids[current_tloc][c]]=currentcolor[c];
+	}
+	this.ColorCells(current_cellids[current_tloc],currentcolor);
+}
 //*******************************
 //CellPlot.Info is the class to show infomation
 //*******************************
@@ -530,6 +555,7 @@ CellPlot.Control.prototype.PlayandPause=function()
 	else
 	  this.AutoPlay();
 }
+
 CellPlot.Control.prototype.Reset=function()
 {
 	CP.canvas.ClearData();
@@ -537,11 +563,36 @@ CellPlot.Control.prototype.Reset=function()
 	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
 	this.Replay();
 }
+
 CellPlot.Control.prototype.ClearColor=function()
 {
 	CP.canvas.showneighor=false;
 	CP.canvas.bygeneexp=false;
 	for (var c=0; c<cellnum;c++)
 	  signedcolors[c]=graycolor;
-	CP.canvas.Colorcells(current_cellids[current_tloc],[]);
+	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
+}
+
+CellPlot.Control.prototype.ClearSelection=function()
+{
+	CP.canvas.ColorCells(selected_cellids,[]);
+	//Colortreenode(selected_cellids,'black');
+	selected_cellids=[];
+	SELECTED=[];
+	CP.info.ChangeElement("selected_cell","selected cell: ");
+}
+
+CellPlot.Control.prototype.ColorbyCellType=function()
+{
+	this.ClearColor();
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=typecolors[c];
+	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
+}
+
+CellPlot.Control.prototype.ColorbyGeneExp=function()
+{
+	this.ClearColor();
+	CP.canvas.bygeneexp=true;
+	CP.canvas.ByGeneExp();
 }
