@@ -438,7 +438,7 @@ CellPlot.Canvas.prototype.ByGeneExp=function()
 {
 	var currentcolor=new Array(current_cellids[current_tloc].length);
 	for (var c=0; c<current_cellids[current_tloc].length;c++){
-		var tempcolor=[];
+		var tempcolor=[0,0,0];
 		if(isNaN(geneexp[current_tloc][c]))// not a number
 		  tempcolor=[100,100,100];
 		else{
