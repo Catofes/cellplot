@@ -35,6 +35,7 @@ function onChangeGene(id)
 		id: 'info',
 		src: url,
 		type: 'text/javascript'}).appendTo('head');
+	document.cellplot.tree.LoadData();
 	document.cellplot.control.Reset();
 	onSetting();
 }

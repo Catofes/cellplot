@@ -5,11 +5,11 @@
 }
 .cellplot .canvas{
 	width: 570px;
-	height: 380px;
+	height: 600px;
 }
 .cellplot .tree{
 	width: 570px;
-	height: 380px;
+	height: 600px;
 }
 
 .cellplot .info{
@@ -36,7 +36,7 @@
 }
 
 .node text {
-	font-size:10px; 
+	font-size:20px; 
 	font-family:sans-serif;
 }
 

@@ -175,8 +175,10 @@ CellPlot.Canvas=function(container)
 					  //{console.log("right")}
 			  }
 			toappearstr='';
-			for (c=0;c<selected_cellids.length;c++)
+			for (c=0;c<selected_cellids.length;c++){
 			  toappearstr=toappearstr+","+cellnames[selected_cellids[c]];
+			  $("#cellnode_"+selected_cellids[c]).children()[0].style.fill="#ff0000";
+			}
 			//$('#selected_cell').html("sellected_cell:	"+toappearstr);
 			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
 			if (toappearstr==='')
@@ -699,6 +701,7 @@ CellPlot.Control.prototype.ClearSelection=function()
 {
 	CP.canvas.ColorCells(selected_cellids,[]);
 	CP.canvas.ClearSelect();
+	CP.tree.ClearSelect();
 	//Colortreenode(selected_cellids,'black');
 	selected_cellids=[];
 	SELECTED=[];
@@ -754,7 +757,7 @@ CellPlot.Tree=function(container)
 	this.panBoundary = 20; // Within 20px from edges will pan when dragging.
 	// Misc. variables
 	var i = 0;
-	this.duration = 750;
+	this.duration = 200;
 	var root;
 	this.root=root;
 
@@ -791,15 +794,16 @@ CellPlot.Tree=function(container)
 	this.click=function(d) {
 		if (d3.event.defaultPrevented) return; // click suppressed
 		//d = toggleChildren(d);
-		d.selected=!d.selected;
-		_this.update(d);
+		//_this.update(d);
+		$("#cellnode_"+d.cellid).children()[0].style.fill="#ff0000";
 		_this.centerNode(d);
+		CP.canvas.Addtoselected(d.cellid);
 	}
 	this.LoadData("test.json");
 }
 
 CellPlot.Tree.prototype.LoadData=function(name)
-{
+{/*
 	var data;
 	var _this=this;
 	d3.json(name, function(error, json) {
@@ -820,6 +824,47 @@ CellPlot.Tree.prototype.LoadData=function(name)
 		_this.update(_this.root);
 		_this.centerNode(_this.root);
 	});
+*/
+	_this=this;
+	var data=[];
+	newdata=function(){
+		this.cellid;
+		this.name;
+		this.children=[];
+		return this;
+	}
+	for(i=0;i<dlist.length;i++){
+		cellid=dlist[i];
+		data[cellid]=new newdata();
+		data[cellid].cellid=dlist[i];
+		data[cellid].name=cellnames[dlist[i]];
+		data[cellid].children=[];
+	}
+	var thefi=0;
+	for(i=0;i<dlist.length;i++){
+		if(mlist[i]==-2){
+			thefi=i;
+			continue;
+		}
+		data[mlist[i]].children.push(data[dlist[i]]);
+	}
+	data=data[0];
+	//console.log(data[thefi]);
+	_this.visit(data, function(d) {
+		_this.totalNodes++;
+		_this.maxLabelLength = Math.max(d.name.length, _this.maxLabelLength);
+
+	}, function(d) {
+		return d.children && d.children.length > 0 ? d.children : null;
+	});
+	_this.root = data;
+	_this.root.x0 = _this.viewerHeight / 2;
+	_this.root.y0 = 0;
+
+	// Layout the tree initially and center on the root node.
+	_this.update(_this.root);
+	_this.centerNode(_this.root);
+
 }
 // A recursive helper function for performing some setup by walking through all nodes
 CellPlot.Tree.prototype.visit=function(parent, visitFn, childrenFn) {
@@ -1160,6 +1205,9 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr("transform", function(d) {
 			return "translate(" + source.y0 + "," + source.x0 + ")";
 		})
+		.attr("id", function(d){
+			return "cellnode_"+d.cellid;
+		})
 	.on('click', this.click);
 	nodeEnter.append("circle")
 		.attr('class', 'nodeCircle')
@@ -1210,7 +1258,7 @@ CellPlot.Tree.prototype.update=function(source) {
 
 	// Change the circle fill depending on whether it has children and is collapsed
 	node.select("circle.nodeCircle")
-		.attr("r", 4.5)
+		.attr("r", 7.5)
 		.style("fill", function(d) {
 			return d.selected ? "lightsteelblue" : "#fff";
 		});
@@ -1218,6 +1266,9 @@ CellPlot.Tree.prototype.update=function(source) {
 	// Transition nodes to their new position.
 	var nodeUpdate = node.transition()
 		.duration(this.duration)
+		.attr("id", function(d){
+			return "cellnode_"+d.cellid;
+		})	
 		.attr("transform", function(d) {
 			return "translate(" + d.y + "," + d.x + ")";
 		});
@@ -1262,18 +1313,18 @@ CellPlot.Tree.prototype.update=function(source) {
 
 	// Transition links to their new position.
 	link.transition()
-		.duration(this.duration)
-		.attr("d", this.diagonal);
+		.duration(_this.duration)
+		.attr("d", _this.diagonal);
 
 	// Transition exiting nodes to the parent's new position.
 	link.exit().transition()
-		.duration(this.duration)
+		.duration(_this.duration)
 		.attr("d", function(d) {
 			var o = {
 				x: source.x,
 			y: source.y
 			};
-			return this.diagonal({
+			return _this.diagonal({
 				source: o,
 				   target: o
 			});
@@ -1285,5 +1336,14 @@ CellPlot.Tree.prototype.update=function(source) {
 		d.x0 = d.x;
 		d.y0 = d.y;
 	});
+}
+
+CellPlot.Tree.prototype.ClearSelect=function()
+{
+	for(i=0;i<cellnum;i++){
+		a=$("#cellnode_"+i).children()[0];
+		if(a)
+		  $("#cellnode_"+i).children()[0].style.fill="#ffffff";
+	}
 }
 
