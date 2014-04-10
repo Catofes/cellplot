@@ -656,7 +656,6 @@ CellPlot.Control.prototype.Reset=function()
 {
 	CP.canvas.ClearData();
 	this.ClearSelection();
-	this.ClearColor();
 	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
 	this.Replay();
 }
