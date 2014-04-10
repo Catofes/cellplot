@@ -124,13 +124,21 @@ CellPlot.Canvas=function(container)
 	//Private function below
 	//**********************
 
+	absleft=0;
+	abstop=0;
+	obj=container;
+	while (obj.offsetParent){
+		abstop += obj.offsetTop;
+		absleft += obj.offsetLeft;
+		obj = obj.offsetParent;
+	}
 
 	//Mouse Move function
 	this.onDocumentMouseMove=function(event)
 	{
 		event.preventDefault();
-		mouse_move.x = ( (event.clientX-container.offsetLeft + $(window).scrollLeft()) / container.clientWidth ) * 2 - 1;
-		mouse_move.y = - ( (event.clientY- container.offsetTop+ $(window).scrollTop()) / container.clientHeight ) * 2 + 1;
+		mouse_move.x = ( (event.clientX-absleft + $(window).scrollLeft()) / container.clientWidth ) * 2 - 1;
+		mouse_move.y = - ( (event.clientY- abstop+ $(window).scrollTop()) / container.clientHeight ) * 2 + 1;
 	}
 
 	//Mouse Click function
@@ -764,7 +772,7 @@ CellPlot.Tree=function(container)
 		.projection(function(d) {
 			return [d.y, d.x];
 		});
-	
+
 	this.sortTree();
 	_this=this;
 	var zoom=function() {
@@ -779,7 +787,7 @@ CellPlot.Tree=function(container)
 		.call(this.zoomListener);
 	// Append a group which holds all nodes and which the zoom Listener can act upon.
 	this.svgGroup = this.baseSvg.append("g");
-	
+
 	this.click=function(d) {
 		if (d3.event.defaultPrevented) return; // click suppressed
 		//d = toggleChildren(d);
