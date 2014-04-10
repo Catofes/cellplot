@@ -1,13 +1,61 @@
 .cellplot{
 	cursor: pointer;
-	width: 600px;
 	margin-left: auto;
 	margin-right: auto;
 }
 .cellplot .canvas{
-	width: 600px;
-	height: 400px;
+	width: 570px;
+	height: 380px;
 }
+.cellplot .tree{
+	width: 570px;
+	height: 380px;
+}
+
+.cellplot .info{
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .footer{
 	margin-top: 50px;
+}
+
+.node {
+	cursor: pointer;
+}
+
+.overlay{
+	background-color:#EEE;
+}
+
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+
+.node text {
+	font-size:10px; 
+	font-family:sans-serif;
+}
+
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1.5px;
+}
+
+.templink {
+	fill: none;
+	stroke: red;
+	stroke-width: 3px;
+}
+
+.ghostCircle.show{
+	display:block;
+}
+
+.ghostCircle, .activeDrag .ghostCircle{
+	display: none;
 }
