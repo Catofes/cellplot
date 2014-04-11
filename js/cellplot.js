@@ -16,12 +16,6 @@ CellPlot=function(container){
 	this.container=container;
 	CP=this;
 	
-	//Add Element CellPlot.Inof
-	htmlinfo=document.createElement("div");
-	htmlinfo.className="info";
-	container.appendChild(htmlinfo);
-	this.info=new CellPlot.Info(htmlinfo);
-
 	htmlrow=document.createElement("div");
 	htmlrow.className="row";
 	container.appendChild(htmlrow);
@@ -33,6 +27,13 @@ CellPlot=function(container){
 	htmlright=document.createElement("div");
 	htmlright.className="col-md-6";
 	htmlrow.appendChild(htmlright);
+
+	//Add Element CellPlot.Inof
+	htmlinfo=document.createElement("div");
+	htmlinfo.className="info";
+	htmlleft.appendChild(htmlinfo);
+	this.info=new CellPlot.Info(htmlinfo);
+
 
 	//Add Element CellPlot.Canvas
 	htmlcanvas=document.createElement("div");
@@ -47,12 +48,17 @@ CellPlot=function(container){
 	htmlleft.appendChild(htmlslide);
 	this.slide=new CellPlot.Slide(htmlslide);
 
+	htmlbutton=document.createElement("div");
+	htmlbutton.id="CellPlot_Button";
+	htmlleft.appendChild(htmlbutton);
+	this.button=new CellPlot.Button(htmlbutton);
+
 	htmltree=document.createElement("div");
 	htmltree.id="CellPlot_Tree";
 	htmltree.className="tree";
     htmlright.appendChild(htmltree);
 	this.tree=new CellPlot.Tree(htmltree);
-
+	
 	this.control=new CellPlot.Control();
 	return this;
 }
@@ -571,175 +577,6 @@ CellPlot.Canvas.prototype.ColorOffsprings=function()
 	this.ColorCells(current_cellids[current_tloc],[]);
 }
 
-
-//*******************************
-//CellPlot.Info is the class to show infomation
-//*******************************
-
-//Init of the class
-CellPlot.Info=function(container)
-{
-	this.element=[];
-	this.container=container;
-
-	this.AddElement("current_time","current time:	");
-	this.AddElement("time_choosen","time choosen:	");
-	this.AddElement("mouseover_cell","mouseover cell:	");
-	this.AddElement("selected_cell","selected cell:	");
-	this.AddElement("neighbors_of_select_cell","neighbors of select cell:	");
-}
-
-//Create Element
-CellPlot.Info.prototype.AddElement=function(id,data)
-{
-	ele=document.createElement("p");
-	ele.id=id;
-	ele.className="info";
-	ele.innerHTML=data;
-	this.container.appendChild(ele);
-	this.element[id]=ele;
-}
-
-//Change the Data
-CellPlot.Info.prototype.ChangeElement=function(id,data)
-{
-	this.element[id].innerHTML=data;
-}
-
-
-
-//***********************************
-//CellPlot.Slide is the class of slide to control time 
-//***********************************
-
-
-CellPlot.Slide=function(container)
-{
-	$('#CellPlot_Slide').slider(
-				{
-					range : "min",
-	value : rawtimelist[0],
-	min: rawtimelist[0],
-	max: rawtimelist[rawtimelist.length-1],
-	change: function(event,ui) { CP.canvas.LoadData(ui.value);} ,
-	slide : function(event,ui) { CP.info.ChangeElement("time_choosen","time choosen :"+ui.value);}  
-				});
-}
-
-
-//********************************
-//CellPlot.Control is the class to control the whole project
-//********************************
-
-
-CellPlot.Control=function()
-{
-	this.autoplay=null;
-	this.ifplay=false;
-}
-
-CellPlot.Control.prototype.MoveForward=function()
-{
-	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
-	if(cvalue<rawtimelist[rawtimelist.length-1]){
-		$('#CellPlot_Slide').slider("value",cvalue+1);
-	}else{
-		CP.control.StopPlay();
-	}
-}
-
-CellPlot.Control.prototype.MoveBackward=function()
-{
-	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
-	$('#CellPlot_Slide').slider("value",cvalue-1)
-}
-
-CellPlot.Control.prototype.Replay=function()
-{
-	$('#CellPlot_Slide').slider("value",1)
-}
-
-CellPlot.Control.prototype.AutoPlay=function()
-{
-	this.autoplay=setInterval(this.MoveForward,1000);
-	this.ifplay=true;
-	CP.canvas.showseg=false;
-}
-
-CellPlot.Control.prototype.StopPlay=function()
-{
-	clearInterval(this.autoplay);
-	this.ifplay=false;
-}
-
-CellPlot.Control.prototype.PlayandPause=function()
-{
-	if(this.ifplay)
-	  this.StopPlay();
-	else
-	  this.AutoPlay();
-}
-
-CellPlot.Control.prototype.Reset=function()
-{
-	CP.canvas.ClearData();
-	this.ClearSelection();
-	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
-	this.Replay();
-}
-
-CellPlot.Control.prototype.ClearColor=function()
-{
-	CP.canvas.showneighbor=false;
-	CP.canvas.bygeneexp=false;
-	for (var c=0; c<cellnum;c++)
-	  signedcolors[c]=graycolor;
-	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
-}
-
-CellPlot.Control.prototype.ClearSelection=function()
-{
-	CP.canvas.ColorCells(selected_cellids,[]);
-	CP.canvas.ClearSelect();
-	CP.tree.ClearSelect();
-	//Colortreenode(selected_cellids,'black');
-	selected_cellids=[];
-	SELECTED=[];
-	CP.info.ChangeElement("selected_cell","selected cell: ");
-}
-
-CellPlot.Control.prototype.ColorbyCellType=function()
-{
-	this.ClearColor();
-	for (var c=0; c<cellnum;c++)
-	  signedcolors[c]=typecolors[c];
-	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
-}
-
-CellPlot.Control.prototype.ColorbyGeneExp=function()
-{
-	this.ClearColor();
-	CP.canvas.bygeneexp=!CP.canvas.bygeneexp;
-	CP.canvas.ByGeneExp();
-}
-
-CellPlot.Control.prototype.ShowNeighbor=function()
-{
-	CP.canvas.showneighbor=!CP.canvas.showneighbor;
-	CP.canvas.LoadData(current_tloc+1);
-}
-
-CellPlot.Control.prototype.ShowSeg=function()
-{
-	CP.canvas.showseg=!CP.canvas.showseg;
-	CP.canvas.LoadData(current_tloc+1);
-}
-
-CellPlot.Control.prototype.ShowOffsprings=function()
-{
-	CP.canvas.ColorOffsprings();
-}
-
 //*****************************
 //CellPlot.Tree is a tree
 //*******************************
@@ -754,7 +591,7 @@ CellPlot.Tree=function(container)
 	this.draggingNode = null;
 	// panning variables
 	this.panSpeed = 200;
-	this.panBoundary = 20; // Within 20px from edges will pan when dragging.
+	this.panBoundary = 30; // Within 20px from edges will pan when dragging.
 	// Misc. variables
 	var i = 0;
 	this.duration = 200;
@@ -799,32 +636,12 @@ CellPlot.Tree=function(container)
 		_this.centerNode(d);
 		CP.canvas.Addtoselected(d.cellid);
 	}
+	this.zoomListener.scale(0.5);
 	this.LoadData("test.json");
 }
 
 CellPlot.Tree.prototype.LoadData=function(name)
-{/*
-	var data;
-	var _this=this;
-	d3.json(name, function(error, json) {
-		if (error) return console.warn(error);
-		data = json;
-		_this.visit(data, function(d) {
-			_this.totalNodes++;
-			_this.maxLabelLength = Math.max(d.name.length, _this.maxLabelLength);
-
-		}, function(d) {
-			return d.children && d.children.length > 0 ? d.children : null;
-		});
-		_this.root = data;
-		_this.root.x0 = _this.viewerHeight / 2;
-		_this.root.y0 = 0;
-
-		// Layout the tree initially and center on the root node.
-		_this.update(_this.root);
-		_this.centerNode(_this.root);
-	});
-*/
+{
 	_this=this;
 	var data=[];
 	newdata=function(){
@@ -929,203 +746,6 @@ CellPlot.Tree.prototype.pan=function(domNode, direction) {
 	}
 }
 
-// Define the zoom function for the zoomable tree
-
-
-
-
-/*
-   CellPlot.Tree.initiateDrag=function(d, domNode) {
-   draggingNode = d;
-   d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
-   d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
-   d3.select(domNode).attr('class', 'node activeDrag');
-
-   svgGroup.selectAll("g.node").sort(function(a, b) { // select the parent and sort the path's
-   if (a.id != draggingNode.id) return 1; // a is not the hovered element, send "a" to the back
-   else return -1; // a is the hovered element, bring "a" to the front
-   });
-// if nodes has children, remove the links and nodes
-if (nodes.length > 1) {
-// remove link paths
-links = tree.links(nodes);
-nodePaths = svgGroup.selectAll("path.link")
-.data(links, function(d) {
-return d.target.id;
-}).remove();
-// remove child nodes
-nodesExit = svgGroup.selectAll("g.node")
-.data(nodes, function(d) {
-return d.id;
-}).filter(function(d, i) {
-if (d.id == draggingNode.id) {
-return false;
-}
-return true;
-}).remove();
-}
-
-// remove parent link
-parentLink = tree.links(tree.nodes(draggingNode.parent));
-svgGroup.selectAll('path.link').filter(function(d, i) {
-if (d.target.id == draggingNode.id) {
-return true;
-}
-return false;
-}).remove();
-
-dragStarted = null;
-}
-
-// define the baseSvg, attaching a class for styling and the zoomListener
-
-// Define the drag listeners for drag/drop behaviour of nodes.
-dragListener = d3.behavior.drag()
-.on("dragstart", function(d) {
-if (d == root) {
-return;
-}
-dragStarted = true;
-nodes = tree.nodes(d);
-d3.event.sourceEvent.stopPropagation();
-// it's important that we suppress the mouseover event on the node being dragged. Otherwise it will absorb the mouseover event and the underlying node will not detect it d3.select(this).attr('pointer-events', 'none');
-})
-.on("drag", function(d) {
-if (d == root) {
-return;
-}
-if (dragStarted) {
-domNode = this;
-initiateDrag(d, domNode);
-}
-
-// get coords of mouseEvent relative to svg container to allow for panning
-relCoords = d3.mouse($('svg').get(0));
-if (relCoords[0] < panBoundary) {
-panTimer = true;
-pan(this, 'left');
-} else if (relCoords[0] > ($('svg').width() - panBoundary)) {
-
-panTimer = true;
-pan(this, 'right');
-} else if (relCoords[1] < panBoundary) {
-	panTimer = true;
-	pan(this, 'up');
-} else if (relCoords[1] > ($('svg').height() - panBoundary)) {
-	panTimer = true;
-	pan(this, 'down');
-} else {
-	try {
-		clearTimeout(panTimer);
-	} catch (e) {
-
-	}
-}
-
-d.x0 += d3.event.dy;
-d.y0 += d3.event.dx;
-var node = d3.select(this);
-node.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")");
-updateTempConnector();
-}).on("dragend", function(d) {
-	if (d == root) {
-		return;
-	}
-	domNode = this;
-	if (selectedNode) {
-		// now remove the element from the parent, and insert it into the new elements children
-		var index = draggingNode.parent.children.indexOf(draggingNode);
-		if (index > -1) {
-			draggingNode.parent.children.splice(index, 1);
-		}
-		if (typeof selectedNode.children !== 'undefined' || typeof selectedNode._children !== 'undefined') {
-			if (typeof selectedNode.children !== 'undefined') {
-				selectedNode.children.push(draggingNode);
-			} else {
-				selectedNode._children.push(draggingNode);
-			}
-		} else {
-			selectedNode.children = [];
-			selectedNode.children.push(draggingNode);
-		}
-		// Make sure that the node being added to is expanded so user can see added node is correctly moved
-		expand(selectedNode);
-		sortTree();
-		endDrag();
-	} else {
-		endDrag();
-	}
-});
-
-function endDrag() {
-	selectedNode = null;
-	d3.selectAll('.ghostCircle').attr('class', 'ghostCircle');
-	d3.select(domNode).attr('class', 'node');
-	// now restore the mouseover event or we won't be able to drag a 2nd time
-	d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
-	updateTempConnector();
-	if (draggingNode !== null) {
-		update(root);
-		centerNode(draggingNode);
-		draggingNode = null;
-	}
-}
-
-// Helper functions for collapsing and expanding nodes.
-
-function collapse(d) {
-	if (d.children) {
-		d._children = d.children;
-		d._children.forEach(collapse);
-		d.children = null;
-	}
-}
-
-function expand(d) {
-	if (d._children) {
-		d.children = d._children;
-		d.children.forEach(expand);
-		d._children = null;
-	}
-}
-
-var overCircle = function(d) {
-	selectedNode = d;
-	updateTempConnector();
-};
-var outCircle = function(d) {
-	selectedNode = null;
-	updateTempConnector();
-};
-
-// Function to update the temporary connector indicating dragging affiliation
-var updateTempConnector = function() {
-	var data = [];
-	if (draggingNode !== null && selectedNode !== null) {
-		// have to flip the source coordinates since we did this for the existing connectors on the original tree
-		data = [{
-			source: {
-				x: selectedNode.y0,
-					y: selectedNode.x0
-			},
-				target: {
-					x: draggingNode.y0,
-					y: draggingNode.x0
-				}
-		}];
-	}
-	var link = svgGroup.selectAll(".templink").data(data);
-
-	link.enter().append("path")
-		.attr("class", "templink")
-		.attr("d", d3.svg.diagonal())
-		.attr('pointer-events', 'none');
-
-	link.attr("d", d3.svg.diagonal());
-
-	link.exit().remove();
-};
-*/
 // Function to center node when clicked/dropped so node doesn't get lost when collapsing/moving with large amount of children.
 
 CellPlot.Tree.prototype.centerNode=function(source) {
@@ -1140,23 +760,6 @@ CellPlot.Tree.prototype.centerNode=function(source) {
 	this.zoomListener.scale(scale);
 	this.zoomListener.translate([x, y]);
 }
-
-// Toggle children function
-/*
-   function toggleChildren(d) {
-   if (d.children) {
-   d._children = d.children;
-   d.children = null;
-   } else if (d._children) {
-   d.children = d._children;
-   d._children = null;
-   }
-   return d;
-   }
-   */
-// Toggle children on click.
-
-
 
 CellPlot.Tree.prototype.update=function(source) {
 	// Compute the new height, function counts total children of root node and sets tree height accordingly.
@@ -1345,5 +948,219 @@ CellPlot.Tree.prototype.ClearSelect=function()
 		if(a)
 		  $("#cellnode_"+i).children()[0].style.fill="#ffffff";
 	}
+}
+
+
+//*******************************
+//CellPlot.Info is the class to show infomation
+//*******************************
+
+//Init of the class
+CellPlot.Info=function(container)
+{
+	this.element=[];
+	this.container=container;
+
+	this.AddElement("current_time","current time:	");
+	this.AddElement("time_choosen","time choosen:	");
+	this.AddElement("mouseover_cell","mouseover cell:	");
+	this.AddElement("selected_cell","selected cell:	");
+	this.AddElement("neighbors_of_select_cell","neighbors of select cell:	");
+}
+
+//Create Element
+CellPlot.Info.prototype.AddElement=function(id,data)
+{
+	ele=document.createElement("p");
+	ele.id=id;
+	ele.className="info";
+	ele.innerHTML=data;
+	this.container.appendChild(ele);
+	this.element[id]=ele;
+}
+
+//Change the Data
+CellPlot.Info.prototype.ChangeElement=function(id,data)
+{
+	this.element[id].innerHTML=data;
+}
+
+
+
+//***********************************
+//CellPlot.Slide is the class of slide to control time 
+//***********************************
+
+
+CellPlot.Slide=function(container)
+{
+	$('#CellPlot_Slide').slider(
+				{
+					range : "min",
+	value : rawtimelist[0],
+	min: rawtimelist[0],
+	max: rawtimelist[rawtimelist.length-1],
+	change: function(event,ui) { CP.canvas.LoadData(ui.value);} ,
+	slide : function(event,ui) { CP.info.ChangeElement("time_choosen","time choosen :"+ui.value);}  
+				});
+}
+
+
+//********************************
+//CellPlot.Control is the class to control the whole project
+//********************************
+
+
+CellPlot.Control=function()
+{
+	this.autoplay=null;
+	this.ifplay=false;
+}
+
+CellPlot.Control.prototype.MoveForward=function()
+{
+	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	if(cvalue<rawtimelist[rawtimelist.length-1]){
+		$('#CellPlot_Slide').slider("value",cvalue+1);
+	}else{
+		CP.control.StopPlay();
+	}
+}
+
+CellPlot.Control.prototype.MoveBackward=function()
+{
+	cvalue = $('#CellPlot_Slide').slider( "option", "value" );
+	$('#CellPlot_Slide').slider("value",cvalue-1)
+}
+
+CellPlot.Control.prototype.Replay=function()
+{
+	$('#CellPlot_Slide').slider("value",1)
+}
+
+CellPlot.Control.prototype.AutoPlay=function()
+{
+	this.autoplay=setInterval(this.MoveForward,1000);
+	this.ifplay=true;
+	CP.canvas.showseg=false;
+}
+
+CellPlot.Control.prototype.StopPlay=function()
+{
+	clearInterval(this.autoplay);
+	this.ifplay=false;
+}
+
+CellPlot.Control.prototype.PlayandPause=function()
+{
+	if(this.ifplay)
+	  this.StopPlay();
+	else
+	  this.AutoPlay();
+}
+
+CellPlot.Control.prototype.Reset=function()
+{
+	CP.canvas.ClearData();
+	this.ClearSelection();
+	$('#CellPlot_Slide').slider("option","max",rawtimelist[rawtimelist.length-1]);
+	this.Replay();
+}
+
+CellPlot.Control.prototype.ClearColor=function()
+{
+	CP.canvas.showneighbor=false;
+	CP.canvas.bygeneexp=false;
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=graycolor;
+	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
+}
+
+CellPlot.Control.prototype.ClearSelection=function()
+{
+	CP.canvas.ColorCells(selected_cellids,[]);
+	CP.canvas.ClearSelect();
+	CP.tree.ClearSelect();
+	//Colortreenode(selected_cellids,'black');
+	selected_cellids=[];
+	SELECTED=[];
+	CP.info.ChangeElement("selected_cell","selected cell: ");
+}
+
+CellPlot.Control.prototype.ColorbyCellType=function()
+{
+	this.ClearColor();
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=typecolors[c];
+	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
+}
+
+CellPlot.Control.prototype.ColorbyGeneExp=function()
+{
+	this.ClearColor();
+	CP.canvas.bygeneexp=!CP.canvas.bygeneexp;
+	CP.canvas.ByGeneExp();
+}
+
+CellPlot.Control.prototype.ShowNeighbor=function()
+{
+	CP.canvas.showneighbor=!CP.canvas.showneighbor;
+	CP.canvas.LoadData(current_tloc+1);
+}
+
+CellPlot.Control.prototype.ShowSeg=function()
+{
+	CP.canvas.showseg=!CP.canvas.showseg;
+	CP.canvas.LoadData(current_tloc+1);
+}
+
+CellPlot.Control.prototype.ShowOffsprings=function()
+{
+	CP.canvas.ColorOffsprings();
+}
+
+//***************************************
+//CP.button is class of button 
+//***************************************
+
+CellPlot.Button=function(container)
+{
+	this.buttoncontainer=[];
+	this.button=[];
+	this.addbuttonclass=function(name)
+	{
+		br=document.createElement("br");
+		buttonclass=document.createElement("div");
+		buttonclass.id=name;
+		buttonclass.className="btn-group";
+		//buttonclass.innerText=name;
+		container.appendChild(br);
+		container.appendChild(buttonclass);
+		this.buttoncontainer[name]=buttonclass;
+	}
+	this.addbutton=function(bcontainer,name,fname)
+	{
+		buttonclass=document.createElement("button");
+		buttonclass.id=name;
+		buttonclass.className="btn btn-default";
+		buttonclass.innerText=name;
+		buttonclass.onclick=fname;
+		bcontainer.appendChild(buttonclass);
+		this.button[name]=buttonclass;
+	}
+	this.addbuttonclass("Play Control");
+	this.addbutton(this.buttoncontainer["Play Control"],"Play/Pause",function(){CP.control.PlayandPause()});
+	this.addbutton(this.buttoncontainer["Play Control"],"Move Forward",function(){CP.control.MoveForward()});
+	this.addbutton(this.buttoncontainer["Play Control"],"Move Backward",function(){CP.control.MoveBackward()});
+	this.addbuttonclass("Color Control");
+	this.addbutton(this.buttoncontainer["Color Control"],"By CellType",function(){CP.control.ColorbyCellType()});
+	this.addbutton(this.buttoncontainer["Color Control"],"By Gene Expression",function(){CP.control.ColorbyGeneExp()});
+	this.addbutton(this.buttoncontainer["Color Control"],"ClearColor",function(){CP.control.ClearColor()});
+	this.addbutton(this.buttoncontainer["Color Control"],"ClearSelection",function(){CP.control.ClearSelection()});
+	this.addbuttonclass("Option");
+	this.addbutton(this.buttoncontainer["Option"],"Show Neighbor",function(){CP.control.ShowNeighbor()});
+	this.addbutton(this.buttoncontainer["Option"],"Show Vseg",function(){CP.control.ShowSeg()});
+	this.addbutton(this.buttoncontainer["Option"],"Show Offsprings",function(){CP.control.ShowOffsprings()});
+	return this;
 }
 
