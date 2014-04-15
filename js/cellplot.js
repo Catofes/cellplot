@@ -647,6 +647,7 @@ CellPlot.Tree.prototype.LoadData=function(name)
 	newdata=function(){
 		this.cellid;
 		this.name;
+		this.color;
 		this.children=[];
 		return this;
 	}
@@ -656,6 +657,7 @@ CellPlot.Tree.prototype.LoadData=function(name)
 		data[cellid].cellid=dlist[i];
 		data[cellid].name=cellnames[dlist[i]];
 		data[cellid].children=[];
+		data[cellid].color=CP.RGB2HTML(colorbygene[cellid][0],colorbygene[cellid][1],colorbygene[cellid][2]);
 	}
 	var thefi=0;
 	for(i=0;i<dlist.length;i++){
@@ -827,6 +829,9 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr('class', 'nodeText')
 		.attr("text-anchor", function(d) {
 			return d.children || d._children ? "end" : "start";
+		})
+		.attr("fill",function(d) {
+			return d.color
 		})
 	.text(function(d) {
 		return d.name;
