@@ -569,13 +569,42 @@ CellPlot.Canvas.prototype.ColorOffsprings=function()
 		dfrange=offsprange[dfloc];
 		for (var d=dfrange[0]; d<dfrange[1]+1;d++)
 		{
-			dfname=dfnames[d-1];
+			dfname=dfnames[d];
 			loc=cellnames.indexOf(dfname);
 			signedcolors[loc]=highlightcolor;
 		}
 	}   
 	this.ColorCells(current_cellids[current_tloc],[]);
 }
+
+CellPlot.Canvas.prototype.SelectOffsprings=function()
+{
+	for (var c=0; c<cellnum;c++)
+	  signedcolors[c]=graycolor;
+	spring=[];
+	for (var c=0; c<selected_cellids.length;c++){   
+		cname=cellnames[selected_cellids[c]];
+		dfloc=(dfnames).indexOf(cname);
+		dfrange=offsprange[dfloc];
+		for (var d=dfrange[0]; d<dfrange[1]+1;d++)
+		{
+			dfname=dfnames[d];
+			loc=cellnames.indexOf(dfname);
+			spring.push(loc);
+		}
+	}
+	for (i=0;i<spring.length;i++){
+		//$("#cellnode_"+spring[i]).children()[0].style.fill="#ff0000";
+		aa=$("#cellnode_"+spring[i]).children()[0];
+		if(aa){
+			aa.style.fill="#ff0000";
+			this.Addtoselected(spring[i]);
+		}
+	}
+}
+
+
+
 
 //*****************************
 //CellPlot.Tree is a tree
@@ -810,9 +839,9 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr("transform", function(d) {
 			return "translate(" + source.y0 + "," + source.x0 + ")";
 		})
-		.attr("id", function(d){
-			return "cellnode_"+d.cellid;
-		})
+	.attr("id", function(d){
+		return "cellnode_"+d.cellid;
+	})
 	.on('click', this.click);
 	nodeEnter.append("circle")
 		.attr('class', 'nodeCircle')
@@ -830,9 +859,9 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr("text-anchor", function(d) {
 			return d.children || d._children ? "end" : "start";
 		})
-		.attr("fill",function(d) {
-			return d.color
-		})
+	.attr("fill",function(d) {
+		return d.color
+	})
 	.text(function(d) {
 		return d.name;
 	})
@@ -877,9 +906,9 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr("id", function(d){
 			return "cellnode_"+d.cellid;
 		})	
-		.attr("transform", function(d) {
-			return "translate(" + d.y + "," + d.x + ")";
-		});
+	.attr("transform", function(d) {
+		return "translate(" + d.y + "," + d.x + ")";
+	});
 
 	// Fade the text in
 	nodeUpdate.select("text")
@@ -1124,6 +1153,11 @@ CellPlot.Control.prototype.ShowOffsprings=function()
 	CP.canvas.ColorOffsprings();
 }
 
+CellPlot.Control.prototype.SelectOffsprings=function()
+{
+	CP.canvas.SelectOffsprings();
+}
+
 //***************************************
 //CP.button is class of button 
 //***************************************
@@ -1166,6 +1200,8 @@ CellPlot.Button=function(container)
 	this.addbutton(this.buttoncontainer["Option"],"Show Neighbor",function(){CP.control.ShowNeighbor()});
 	this.addbutton(this.buttoncontainer["Option"],"Show Vseg",function(){CP.control.ShowSeg()});
 	this.addbutton(this.buttoncontainer["Option"],"Show Offsprings",function(){CP.control.ShowOffsprings()});
+	this.addbuttonclass("Select");
+	this.addbutton(this.buttoncontainer["Select"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
 	return this;
 }
 
