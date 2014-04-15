@@ -551,7 +551,7 @@ CellPlot.Canvas.prototype.ShowSegmentation=function()
 			var letters = '0123456789ABCDEF'.split('');
 			var color = '#';
 			for (var i = 0; i < 6; i++ )
-			  color += letters[(Math.pow(s,3*i))%16];     
+			  color += letters[(Math.pow(s+29,3*i))%16];     
 			this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],color);
 		}
 	}
