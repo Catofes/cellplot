@@ -1158,6 +1158,18 @@ CellPlot.Control.prototype.SelectOffsprings=function()
 	CP.canvas.SelectOffsprings();
 }
 
+CellPlot.Control.prototype.SelectbyName=function(name)
+{
+	console.log(name);
+	loc=cellnames.indexOf(name);
+	aa=$("#cellnode_"+loc).children()[0];
+	if(aa){
+		aa.style.fill="#ff0000";
+		CP.canvas.Addtoselected(loc);
+	}
+
+}
+
 //***************************************
 //CP.button is class of button 
 //***************************************
@@ -1187,6 +1199,31 @@ CellPlot.Button=function(container)
 		bcontainer.appendChild(buttonclass);
 		this.button[name]=buttonclass;
 	}
+	this.addinput=function(bcontainer,name,inputtext,buttontext,buttonfunc)
+	{
+		div=document.createElement("div");
+		div.className="input-group";
+		div.id=name;
+		input=document.createElement("input");
+		input.className="form-control";
+		input.type="text";
+		input.placeholder=inputtext;
+		div.appendChild(input);
+		span=document.createElement("span");
+		span.className="input-group-btn";
+		div.appendChild(span);
+		button=document.createElement("button");
+		button.class="btn btn-default";
+		button.type="button";
+		button.className="btn btn-default";
+		button.innerHTML=buttontext;
+		button.onclick=buttonfunc;
+		button.inputclass=input;
+		span.appendChild(button);
+		bcontainer.appendChild(div);
+		this.button[name]=div;
+		this.buttoncontainer[name]=span;
+	}
 	this.addbuttonclass("Play Control");
 	this.addbutton(this.buttoncontainer["Play Control"],"Play/Pause",function(){CP.control.PlayandPause()});
 	this.addbutton(this.buttoncontainer["Play Control"],"Move Forward",function(){CP.control.MoveForward()});
@@ -1201,7 +1238,8 @@ CellPlot.Button=function(container)
 	this.addbutton(this.buttoncontainer["Option"],"Show Vseg",function(){CP.control.ShowSeg()});
 	this.addbutton(this.buttoncontainer["Option"],"Show Offsprings",function(){CP.control.ShowOffsprings()});
 	this.addbuttonclass("Select");
-	this.addbutton(this.buttoncontainer["Select"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
+	this.addinput(this.buttoncontainer["Select"],"Select by name","Select by Name","Select by Name",function(){CP.control.SelectbyName(this.inputclass.value)});
+	this.addbutton(this.buttoncontainer["Select by name"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
 	return this;
 }
 
