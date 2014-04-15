@@ -528,7 +528,8 @@ CellPlot.Canvas.prototype.ByGeneExp=function()
 		  tempcolor=[100,100,100];
 		else{
 			for (var k=0; k<3;k++){
-				tempcolor[k]=Math.max(1,Math.min(255,Math.floor(300*(colortable[Math.floor((!geneexp[current_tloc][c])?0:geneexp[current_tloc][c]*64)][k]))));
+				if(Math.floor(geneexp[current_tloc][c]*64)>64||Math.floor(geneexp[current_tloc][c]*64)<0)console.log(geneexp[current_tloc][c]);
+				tempcolor[k]=Math.max(1,Math.min(255,Math.floor(300*(colortable[Math.floor(geneexp[current_tloc][c]*64)][k]))));
 			}
 			var tempv=CP.RGB2HTML(tempcolor[0],tempcolor[1],tempcolor[2]);
 			currentcolor[c]='0x';
