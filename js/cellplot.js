@@ -1148,7 +1148,7 @@ CellPlot.Button=function(container)
 		buttonclass=document.createElement("button");
 		buttonclass.id=name;
 		buttonclass.className="btn btn-default";
-		buttonclass.innerText=name;
+		buttonclass.innerHTML=name;
 		buttonclass.onclick=fname;
 		bcontainer.appendChild(buttonclass);
 		this.button[name]=buttonclass;
