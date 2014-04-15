@@ -16,9 +16,9 @@ function onSetting()
 function onInsertSelect()
 {
 	var num=0;
-	for(var i=0;i<10;i++){
+	for(var i=0;i<17;i++){
 		var txt="<tr>";
-		for(var j=0;j<20;j++){
+		for(var j=0;j<12;j++){
 			num++;
 			txt+=("<td><a onclick=\"onChangeGene("+num+")\">"+genenames[num]+"</a></td>");
 		}
