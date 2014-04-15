@@ -24,7 +24,7 @@ function onInsertSelect()
 			txt+=("<td><a onclick=\"onChangeGene("+num+")\">"+genenames[num]+"</a></td>");
 		}
 		$("#changeCell").append(txt+"</tr>");
-		$("#genetitle").text(genenames[1]+"	@	"+genefilenames[1]);
+		$("#genetitle").text(genenames[0]+"	@	"+genefilenames[0]);
 	}
 }
 
