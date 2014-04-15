@@ -89,9 +89,9 @@ CellPlot.Canvas=function(container)
 
 	//Setup The THREE camera Object;
 	this.camera = new THREE.PerspectiveCamera( 45 , this.width / this.height , 1 , 10000 );
-	this.camera.position.x = 500;
-	this.camera.position.y = 100;
-	this.camera.position.z = 100;
+	this.camera.position.x = 2;
+	this.camera.position.y = -20;
+	this.camera.position.z = 40;
 	this.camera.up.x = 0;
 	this.camera.up.y = 0;
 	this.camera.up.z = 1;
@@ -323,7 +323,7 @@ CellPlot.Canvas.prototype.DrawObject=function(inputlocs,cellids)
 	for (c=0;c<current_cellnum;c++){
 		cid=cellids[c];
 		tempmaterial=new THREE.MeshLambertMaterial({color: signedcolors[cid]});
-		balls[c]=new THREE.Mesh(new THREE.SphereGeometry(10), tempmaterial);
+		balls[c]=new THREE.Mesh(new THREE.SphereGeometry(1), tempmaterial);
 		balls[c].id=c;
 		balls[c].cellid= cid;
 		balls[c].name=cellnames[cid];
