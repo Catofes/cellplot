@@ -22,9 +22,9 @@ function onInsertSelect()
 			num++;
 			if(!genenames[num])continue;
 			txt+=("<td><a onclick=\"onChangeGene("+num+")\">"+genenames[num]+"</a></td>");
-			$("#genetitle").text(genenames[num]+"	**	"+genefilenames[num]);
 		}
 		$("#changeCell").append(txt+"</tr>");
+		$("#genetitle").text(genenames[1]+"	@	"+genefilenames[1]);
 	}
 }
 
@@ -39,7 +39,8 @@ function onChangeGene(id)
 		type: 'text/javascript'}).appendTo('head');
 	document.cellplot.tree.LoadData();
 	document.cellplot.control.Reset();
-	onSetting();
+	$("#genetitle").text(genenames[id]+"	@	"+genefilenames[id]);
+	onSetting();		
 }
 
 window.onresize=function(){
