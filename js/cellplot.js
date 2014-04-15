@@ -810,7 +810,7 @@ CellPlot.Tree.prototype.update=function(source) {
 		}
 	};
 	childCount(0, this.root);
-	var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line  
+	var newHeight = d3.max(levelWidth) * 40; // 25 pixels per line  
 	this.tree = this.tree.size([newHeight, this.viewerWidth]);
 
 	// Compute the new tree layout.
@@ -870,7 +870,7 @@ CellPlot.Tree.prototype.update=function(source) {
 	// phantom node to give us mouseover in a radius around it
 	nodeEnter.append("circle")
 		.attr('class', 'ghostCircle')
-		.attr("r", 30)
+		.attr("r", 40)
 		.attr("opacity", 0.2) // change this to zero to hide the target area
 		.style("fill", "red")
 		.attr('pointer-events', 'mouseover')
