@@ -548,11 +548,12 @@ CellPlot.Canvas.prototype.ShowSegmentation=function()
 		var cloc=cellid_tocurrent[selected_cellids[s]];
 		if (cloc>-1)
 		{  
-			var letters = '0123456789ABCDEF'.split('');
-			var color = '#';
-			for (var i = 0; i < 6; i++ )
-			  color += letters[(Math.pow(s+29,3*i))%16];     
-			this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],color);
+		var stringToColour = function(str) {
+			for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+			for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+			return colour;
+		}	
+		this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],stringToColour("h"+s));
 		}
 	}
 
@@ -923,10 +924,10 @@ CellPlot.Tree.prototype.update=function(source) {
 		.attr("fill",function(d) {
 			return d.color;
 		})   
-		.text(function(d) {
-			return d.name;
-		})  
-		.style("fill-opacity", 1);
+	.text(function(d) {
+		return d.name;
+	})  
+	.style("fill-opacity", 1);
 
 	// Transition exiting nodes to the parent's new position.
 	var nodeExit = node.exit().transition()
