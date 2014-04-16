@@ -686,7 +686,15 @@ CellPlot.Tree.prototype.LoadData=function(name)
 		data[cellid].cellid=dlist[i];
 		data[cellid].name=cellnames[dlist[i]];
 		data[cellid].children=[];
-		data[cellid].color=CP.RGB2HTML(colorbygene[cellid][0],colorbygene[cellid][1],colorbygene[cellid][2]);
+		color=[];	
+		for ( k=0; k<3;k++)
+		  if (isNaN(avegeneexp[cellid])===false)
+			color[k]=Math.min(255,Math.floor(300*(colortable[Math.floor(avegeneexp[cellid]*63)][k])));
+		  else
+			color[k]=200;
+
+		data[cellid].color=CP.RGB2HTML(color[0],color[1],color[2]);
+
 	}
 	var thefi=0;
 	for(i=0;i<dlist.length;i++){
