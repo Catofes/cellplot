@@ -553,7 +553,7 @@ CellPlot.Canvas.prototype.ShowSegmentation=function()
 			for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
 			return colour;
 		}	
-		this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],stringToColour("h"+pow((s+836),17));
+		this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],stringToColour("h"+pow((s+836),17)));
 		}
 	}
 
