@@ -920,6 +920,12 @@ CellPlot.Tree.prototype.update=function(source) {
 
 	// Fade the text in
 	nodeUpdate.select("text")
+		.attr("fill",function(d) {
+			return d.color;
+		})   
+		.text(function(d) {
+			return d.name;
+		})  
 		.style("fill-opacity", 1);
 
 	// Transition exiting nodes to the parent's new position.
