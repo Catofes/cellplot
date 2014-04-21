@@ -454,7 +454,7 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 		for (s=1;s<selected_cellids.length;s++)
 		  selected_cell_str=selected_cell_str+','+cellnames[selected_cellids[s]];
 		//$('#selectedcell').html(selected_cell_str);
-		CP.info.ChangeElement("selected_cell","selected_cell:	"+selected_cell_str);
+		CP.info.ChangeElement("selected_cell","selected cell:	"+selected_cell_str);
 		//change color of the newly added cell
 		this.ColorCells([cid],choosencolor);
 		//this.Colortreenode([cid],'yellow');
@@ -515,10 +515,33 @@ CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighbor of selected
 			}
 		}
 	}
-	CP.info.ChangeElement("neighbors_of_select_cell","neighbors_of_select_cell:   "+todisplay);	
+	CP.info.ChangeElement("neighbors_of_select_cell","neighbors of select cell:   "+todisplay);	
 	var othercells=this.Allother_currentcells(allneibhorcellids);
 	//Transpcells(othercells,0.5);
 	//Transpcells(allneibhorcellids,1);
+}
+
+CellPlot.Canvas.prototype.SelectNeighbors=function()
+{
+	waittoselect=[];
+	for (c=0; c<selected_cellids.length;c++){
+		// check if the cell is still there
+		cid=selected_cellids[c];
+		ballid=cellid_tocurrent[cid];
+		if (ballid>-1){
+			pairid=contact_pairs[current_tloc][ballid];
+			for(p=0;p<pairid.length;p++){
+				waittoselect.push(balls[pairid[p]].cellid);
+			}
+		}
+	}
+	for(k=0;k<waittoselect.length;k++){
+		aa=$("#cellnode_"+waittoselect[k]).children()[0];
+		if(aa){
+			aa.style.fill="#ff0000";
+			this.Addtoselected(waittoselect[k]);
+		}
+	}
 }
 
 CellPlot.Canvas.prototype.Allother_currentcells=function(givencellids) // all the other current cells ids on the screen
@@ -1186,6 +1209,11 @@ CellPlot.Control.prototype.SelectOffsprings=function()
 	CP.canvas.SelectOffsprings();
 }
 
+CellPlot.Control.prototype.SelectNeighbors=function()
+{
+	CP.canvas.SelectNeighbors();
+}
+
 CellPlot.Control.prototype.SelectbyName=function(name)
 {
 	splitname=name.split(" ");
@@ -1270,6 +1298,7 @@ CellPlot.Button=function(container)
 	this.addbuttonclass("Select");
 	this.addinput(this.buttoncontainer["Select"],"Select by name","Select by Name.Space to split","Select by Name",function(){CP.control.SelectbyName(this.inputclass.value)});
 	this.addbutton(this.buttoncontainer["Select by name"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
+	this.addbutton(this.buttoncontainer["Select by name"],"Select Neighbors",function(){CP.control.SelectNeighbors()});
 	return this;
 }
 
