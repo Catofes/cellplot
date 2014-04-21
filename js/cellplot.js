@@ -1058,7 +1058,7 @@ CellPlot.Info.prototype.AddElement=function(id,data)
 {
 	ele=document.createElement("p");
 	ele.id=id;
-	ele.className="info";
+	ele.className="text";
 	ele.innerHTML=data;
 	this.container.appendChild(ele);
 	this.element[id]=ele;
