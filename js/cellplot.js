@@ -40,6 +40,14 @@ CellPlot=function(container){
 	htmlcanvas.className="canvas";
 	htmlleft.appendChild(htmlcanvas);
 	this.canvas=new CellPlot.Canvas(htmlcanvas);
+	if(this.canvas.error){
+		this.container.removeChild(htmlrow);
+		htmlerror=document.createElement("div");
+		htmlerror.className="error";
+		htmlerror.innerHTML="Sorry, WebGLRender init fault. Seems your brower didn't support webgl. <br> Try to access <a href=\"http://get.webgl.org/\">http://get.webgl.org </a> to have a test of the WebGl's support. <br> In another way you need to use <a href=\"http://windows.microsoft.com/en-us/internet-explorer/download-ie\">IE11</a> or <a href=\"http://www.mozilla.org/en-US/firefox/new/\" >FireFox </a>instead.";
+		this.container.appendChild(htmlerror);
+		return ;
+	}
 
 	//Add Element CellPlot.Slide
 	htmlslide=document.createElement("div");
@@ -56,9 +64,9 @@ CellPlot=function(container){
 	htmltree=document.createElement("div");
 	htmltree.id="CellPlot_Tree";
 	htmltree.className="tree";
-    htmlright.appendChild(htmltree);
+	htmlright.appendChild(htmltree);
 	this.tree=new CellPlot.Tree(htmltree);
-	
+
 	this.control=new CellPlot.Control();
 	return this;
 }
@@ -81,9 +89,14 @@ CellPlot.Canvas=function(container)
 	this.height=container.clientHeight;
 	this.container=container;
 
-	//Setup The THREE render Object;
-	this.renderer=new THREE.WebGLRenderer({antialias: true});
-	this.renderer.setSize(this.width,this.height);
+	try{
+		//Setup The THREE render Object;
+		this.renderer=new THREE.WebGLRenderer({antialias: true});
+		this.renderer.setSize(this.width,this.height);
+	}catch(e){
+		this.error=true;
+		return;
+	}
 	this.container.appendChild(this.renderer.domElement);
 	this.renderer.setClearColorHex(0xFFFFFF,1.0);
 
@@ -111,7 +124,6 @@ CellPlot.Canvas=function(container)
 
 	this.axisHelper = new THREE.AxisHelper( 100 );  
 	this.scene.add(this.axisHelper );
-
 
 	projector=this.projector;
 	controls=this.controls;
@@ -182,8 +194,8 @@ CellPlot.Canvas=function(container)
 			  }
 			toappearstr='';
 			for (c=0;c<selected_cellids.length;c++){
-			  toappearstr=toappearstr+","+cellnames[selected_cellids[c]];
-			  $("#cellnode_"+selected_cellids[c]).children()[0].style.fill="#ff0000";
+				toappearstr=toappearstr+","+cellnames[selected_cellids[c]];
+				$("#cellnode_"+selected_cellids[c]).children()[0].style.fill="#ff0000";
 			}
 			//$('#selected_cell').html("sellected_cell:	"+toappearstr);
 			CP.info.ChangeElement("selected_cell","selected cell:	"+toappearstr);
@@ -548,12 +560,12 @@ CellPlot.Canvas.prototype.ShowSegmentation=function()
 		var cloc=cellid_tocurrent[selected_cellids[s]];
 		if (cloc>-1)
 		{  
-		var stringToColour = function(str) {
-			for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
-			for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
-			return colour;
-		}	
-		this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],stringToColour("h"+Math.pow((s+836),17)));
+			var stringToColour = function(str) {
+				for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+				for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+				return colour;
+			}	
+			this.DrawTriaggles(segp_locs[current_tloc],segf_pids[current_tloc],segc_fids[current_tloc][cloc],stringToColour("h"+Math.pow((s+836),17)));
 		}
 	}
 
