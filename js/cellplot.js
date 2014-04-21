@@ -188,7 +188,7 @@ CellPlot.Canvas=function(container)
 				  //add to selected cell ids only when it is not there yet
 				  if ((selected_cellids).indexOf(intersects[ 0 ].object.cellid)<0)
 					CP.canvas.Addtoselected(intersects[ 0 ].object.cellid);
-				  SELECTED[SELECTED.length] = intersects[ 0 ].object
+				  //SELECTED[SELECTED.length] = intersects[ 0 ].object
 					  //if (event.button===rightClick)
 					  //{console.log("right")}
 			  }
@@ -435,7 +435,7 @@ CellPlot.Canvas.prototype.onAnimate=function()
 		}else{ // there are no intersections
 			// restore previous intersection object (if it exists) to its original color, if they element is not selected already
 			if (INTERSECTED){
-				if (INTERSECTED.cellid && SELECTED.indexOf(INTERSECTED)<0)
+				if (INTERSECTED.cellid && SELECTED.indexOf(INTERSECTED.cellid)<0)
 				  INTERSECTED.material.color.setHex( signedcolors[INTERSECTED.cellid]);
 				INTERSECTED = null;
 				//$('#mouseovercell').html("");
@@ -458,6 +458,7 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 		//change color of the newly added cell
 		this.ColorCells([cid],choosencolor);
 		//this.Colortreenode([cid],'yellow');
+		SELECTED[SELECTED.length] = cid;	
 	}
 }
 
