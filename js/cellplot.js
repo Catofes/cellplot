@@ -701,11 +701,12 @@ CellPlot.Tree=function(container)
 		$("#cellnode_"+d.cellid).children()[0].style.fill="#ff0000";
 		_this.centerNode(d);
 		CP.canvas.Addtoselected(d.cellid);
-	}
-	this.dblclick=function(d) {
-		time=cell_appeartime[d.cellid];
-		if(isNaN(time)==false)
-		$('#CellPlot_Slide').slider("value",time);
+		e=event||window.event;
+		if(e.ctrlKey==true){
+			time=cell_appeartime[d.cellid];
+			if(isNaN(time)==false)
+			  $('#CellPlot_Slide').slider("value",time);
+		}	
 	}
 	this.zoomListener.scale(0.5);
 	this.LoadData("test.json");
@@ -892,8 +893,7 @@ CellPlot.Tree.prototype.update=function(source) {
 	.attr("id", function(d){
 		return "cellnode_"+d.cellid;
 	})
-	.on('click', this.click)
-	.on('dblclick',this.dblclick);
+	.on('click', this.click);
 	nodeEnter.append("circle")
 		.attr('class', 'nodeCircle')
 		.attr("r", 0)
