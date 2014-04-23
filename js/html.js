@@ -19,13 +19,13 @@ function onInsertSelect()
 	for(var i=0;i<17;i++){
 		var txt="<tr>";
 		for(var j=0;j<12;j++){
-			num++;
 			if(!genenames[num])continue;
 			txt+=("<td><a onclick=\"onChangeGene("+num+")\">"+genenames[num]+"</a></td>");
+			num++;
 		}
 		$("#changeCell").append(txt+"</tr>");
-		$("#genetitle").text(genenames[0]+"	@	"+genefilenames[0]);
 	}
+	$("#genetitle").text(genenames[0]+"	@	"+genefilenames[0]);
 }
 
 function onChangeGene(id)
