@@ -44,7 +44,7 @@ CellPlot=function(container){
 		this.container.removeChild(htmlrow);
 		htmlerror=document.createElement("div");
 		htmlerror.className="error";
-		htmlerror.innerHTML="Sorry, WebGLRender init fault. Seems your brower didn't support webgl. <br> Try to access <a href=\"http://get.webgl.org/\">http://get.webgl.org </a> to have a test of the WebGl's support. <br> In another way you need to use <a href=\"http://windows.microsoft.com/en-us/internet-explorer/download-ie\">IE11</a> or <a href=\"http://www.mozilla.org/en-US/firefox/new/\" >FireFox </a>instead.";
+		htmlerror.innerHTML="Sorry, WebGLRender init fault. Seems your brower didn't support webgl. <br> Try to access <a href=\"http://get.webgl.org/\">http://get.webgl.org </a> to have a test of the WebGl's support. <br> In another way you need to use <a href=\"http://windows.microsoft.com/en-us/internet-explorer/download-ie\">IE11</a> or <a href=\"http://www.mozilla.org/en-US/firefox/new/\" >FireFox </a>instead.<br> Here have some useful information blow . <br>If you are use chrome, go to chrome:\/\/gpu to see if webgl is support. If so try to restart chrome or reload the page see if the page works.";
 		this.container.appendChild(htmlerror);
 		return ;
 	}
@@ -701,7 +701,7 @@ CellPlot.Tree=function(container)
 		$("#cellnode_"+d.cellid).children()[0].style.fill="#ff0000";
 		_this.centerNode(d);
 		CP.canvas.Addtoselected(d.cellid);
-		e=event||window.event;
+		e=d3.event;
 		if(e.ctrlKey==true){
 			time=cell_appeartime[d.cellid];
 			if(isNaN(time)==false)
