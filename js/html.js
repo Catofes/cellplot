@@ -20,7 +20,7 @@ function onInsertSelect()
 		var txt="<tr>";
 		for(var j=0;j<12;j++){
 			if(!genenames[num])continue;
-			txt+=("<td><a onclick=\"onChangeGene("+num+")\">"+genenames[num]+"</a></td>");
+			txt+=("<td><a onclick=\"onChangeGene("+num+1+")\">"+genenames[num]+"</a></td>");
 			num++;
 		}
 		$("#changeCell").append(txt+"</tr>");
