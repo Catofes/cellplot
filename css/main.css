@@ -63,3 +63,32 @@
 .ghostCircle, .activeDrag .ghostCircle{
 	display: none;
 }
+
+.ColorPanel{
+
+}
+.ColorPanel .sliders{
+	width:90%;
+	height: 60px;
+	float: left;
+}
+.ColorPanel .sliders .con{
+	height: 20px;
+}
+.ColorPanel .sliders .con .slider{
+	float: left;
+	margin-top: 5px;
+	width: 90%;
+}
+.ColorPanel .sliders .con .text{
+	float: right;
+}
+
+.ColorPanel .sliders .con .text{
+	float: right;
+}
+.ColorPanel .colorarea {
+	width:10%;
+	height:60px;
+	float: right;
+}

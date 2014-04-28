@@ -389,7 +389,9 @@ CellPlot.Canvas.prototype.onDraw=function()
 	this.DrawObject(drawlocs[current_tloc],current_cellids[current_tloc]);
 	for (c=0; c<current_cellids[current_tloc].length;c++)
 	  cellid_tocurrent[current_cellids[current_tloc][c]]=c;
-	this.ColorCells(selected_cellids,choosencolor);//highlight cells in selection
+	//this.ColorCells(selected_cellids,choosencolor);//highlight cells in selection
+	this.ColorCells(current_cellids[current_tloc],[]);
+
 	if (this.showneighbor)   
 	  this.GetNeighbors();
 	if (this.bygeneexp)
@@ -456,6 +458,7 @@ CellPlot.Canvas.prototype.Addtoselected=function(cid)
 		//$('#selectedcell').html(selected_cell_str);
 		CP.info.ChangeElement("selected_cell","selected cell:	"+selected_cell_str);
 		//change color of the newly added cell
+		signedcolors[cid]=choosencolor;
 		this.ColorCells([cid],choosencolor);
 		//this.Colortreenode([cid],'yellow');
 		SELECTED[SELECTED.length] = cid;	
@@ -638,9 +641,16 @@ CellPlot.Canvas.prototype.SelectOffsprings=function()
 			this.Addtoselected(spring[i]);
 		}
 	}
+	//this.ColorCells(current_cellids[current_tloc],[]);
 }
 
+CellPlot.Canvas.prototype.ColorSelected=function(color)
+{
+	for ( c=0; c<selected_cellids.length;c++)
+	  signedcolors[selected_cellids[c]]=color;
+	CP.canvas.ColorCells(current_cellids[current_tloc],[]);
 
+}
 
 
 //*****************************
@@ -1234,6 +1244,11 @@ CellPlot.Control.prototype.SelectbyName=function(name)
 
 }
 
+CellPlot.Control.prototype.ColorSelected=function(color)
+{
+	CP.canvas.ColorSelected(color);
+}
+
 //***************************************
 //CP.button is class of button 
 //***************************************
@@ -1305,6 +1320,77 @@ CellPlot.Button=function(container)
 	this.addinput(this.buttoncontainer["Select"],"Select by name","Select by Name.Space to split","Select by Name",function(){CP.control.SelectbyName(this.inputclass.value)});
 	this.addbutton(this.buttoncontainer["Select by name"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
 	this.addbutton(this.buttoncontainer["Select by name"],"Select Neighbors",function(){CP.control.SelectNeighbors()});
+	this.addbuttonclass("ColorPanel");
+	this.colorpanel=new ColorPanel(this.buttoncontainer["ColorPanel"]);
+	this.addbuttonclass("Manual Color");
+	this.addbutton(this.buttoncontainer["Manual Color"],"Color Selected",function(){CP.control.ColorSelected(CP.button.colorpanel.hexcolor);});
 	return this;
 }
 
+
+ColorPanel=function(con)
+{
+	_ColorPanel=this;
+	this.color=[];
+	this.color["red"]=0;
+	this.color["green"]=0;
+	this.color["blue"]=0;
+	this.deccolor=0;
+	this.hexcolor=0;
+	this.container=con;
+	this.colorpanel=0;
+	this.container.className="ColorPanel";
+	this.init();
+	return this;
+}
+ColorPanel.prototype.AddSlide=function(con,name)
+{
+	_ColorPanel.color[name]=0;
+	container=document.createElement("div");
+	container.className="con";
+	con.appendChild(container);
+	con=container;
+	slide=document.createElement("div");
+	slide.className="slider";
+	slide.id="ColorPanel_slider_"+name;
+	con.appendChild(slide);
+	text=document.createElement("div");
+	text.className="text";
+	text.id="ColorPanel_text_"+name;
+	con.appendChild(text);
+	$('#ColorPanel_text_'+name).text("0");
+	$('#ColorPanel_slider_'+name).slider({
+		range: "min",
+		value: 0,
+		min: 0,
+		max: 255,
+		slide: function(event,ui){
+			$('#ColorPanel_text_'+name).text(ui.value);
+			_ColorPanel.color[name]=ui.value;
+			_ColorPanel.updatecolor();
+		}
+	});
+}
+
+ColorPanel.prototype.init=function()
+{
+	sliders=document.createElement("div");
+	sliders.className="sliders";
+	this.container.appendChild(sliders);
+	colorarea=document.createElement("div");
+	colorarea.className="colorarea";
+	this.colorpanel=colorarea;
+	this.container.appendChild(colorarea);
+	this.colorpanel.style.backgroundColor="#000000";
+	this.AddSlide(sliders,"red");
+	this.AddSlide(sliders,"green");
+	this.AddSlide(sliders,"blue");
+}
+
+ColorPanel.prototype.updatecolor=function()
+{
+	deccolor=0x1000000+this.color["blue"] + 0x100 * this.color["green"] + 0x10000 *this.color["red"];
+	this.hexcolor=deccolor;
+	this.deccolor="#"+deccolor.toString(16).substr(1);
+	this.colorpanel.style.backgroundColor=this.deccolor;
+}
