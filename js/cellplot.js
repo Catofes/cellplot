@@ -15,7 +15,7 @@ CellPlot=function(container){
 	this.height=container.clientHeight;
 	this.container=container;
 	CP=this;
-	
+
 	htmlrow=document.createElement("div");
 	htmlrow.className="row";
 	container.appendChild(htmlrow);
@@ -189,8 +189,8 @@ CellPlot.Canvas=function(container)
 				  if ((selected_cellids).indexOf(intersects[ 0 ].object.cellid)<0)
 					CP.canvas.Addtoselected(intersects[ 0 ].object.cellid);
 				  //SELECTED[SELECTED.length] = intersects[ 0 ].object
-					  //if (event.button===rightClick)
-					  //{console.log("right")}
+				  //if (event.button===rightClick)
+				  //{console.log("right")}
 			  }
 			toappearstr='';
 			for (c=0;c<selected_cellids.length;c++){
@@ -436,34 +436,35 @@ CellPlot.Canvas.prototype.onAnimate=function()
 			}
 		}else{ // there are no intersections
 			// restore previous intersection object (if it exists) to its original color, if they element is not selected already
-			if (INTERSECTED){
-				if (INTERSECTED.cellid && SELECTED.indexOf(INTERSECTED.cellid)<0)
-				  INTERSECTED.material.color.setHex( signedcolors[INTERSECTED.cellid]);
+			if (INTERSECTED{
+				//if (INTERSECTED.cellid && SELECTED.indexOf(INTERSECTED.cellid)<0)
+				INTERSECTED.material.color.setHex( signedcolors[INTERSECTED.cellid]);
 				INTERSECTED = null;
 				//$('#mouseovercell').html("");
 				CP.info.ChangeElement("mouseover_cell","mouseover cell: ");
 			}
-		}
-		this.controls.update();
-	}
-}
+			}
+			this.controls.update();
+			}
+			}
 
-CellPlot.Canvas.prototype.Addtoselected=function(cid)
-{
-	if (selected_cellids.length==0||selected_cellids.indexOf(cid)<0){//not there yet
-		selected_cellids[selected_cellids.length]=cid;
-		selected_cell_str=cellnames[selected_cellids[0]];
-		for (s=1;s<selected_cellids.length;s++)
-		  selected_cell_str=selected_cell_str+','+cellnames[selected_cellids[s]];
-		//$('#selectedcell').html(selected_cell_str);
-		CP.info.ChangeElement("selected_cell","selected cell:	"+selected_cell_str);
-		//change color of the newly added cell
-		signedcolors[cid]=choosencolor;
-		this.ColorCells([cid],choosencolor);
-		//this.Colortreenode([cid],'yellow');
-		SELECTED[SELECTED.length] = cid;	
-	}
-}
+			CellPlot.Canvas.prototype.Addtoselected=function(cid)
+			{
+				if (selected_cellids.length==0||selected_cellids.indexOf(cid)<0){//not there yet
+					selected_cellids[selected_cellids.length]=cid;
+					selected_cell_str=cellnames[selected_cellids[0]];
+					for (s=1;s<selected_cellids.length;s++)
+			  selected_cell_str=selected_cell_str+','+cellnames[selected_cellids[s]];
+			//$('#selectedcell').html(selected_cell_str);
+			CP.info.ChangeElement("selected_cell","selected cell:	"+selected_cell_str);
+			//change color of the newly added cell
+			signedcolors[cid]=choosencolor;
+			//this.ColorCells([cid],choosencolor);
+			//this.Colortreenode([cid],'yellow');
+			this.ColorCells(current_cellids[current_tloc],[]);
+			SELECTED[SELECTED.length] = cid;	
+				}
+			}
 
 CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
