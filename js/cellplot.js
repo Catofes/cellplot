@@ -1240,6 +1240,10 @@ CellPlot.Control.prototype.SelectbyName=function(name)
 		if(aa){
 			aa.style.fill="#ff0000";
 			CP.canvas.Addtoselected(loc);
+			time=cell_appeartime[loc];
+			if(isNaN(time)==false)
+			  $('#CellPlot_Slide').slider("value",time);
+
 		}
 	}
 
