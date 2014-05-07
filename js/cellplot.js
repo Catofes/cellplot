@@ -620,8 +620,8 @@ CellPlot.Canvas.prototype.ColorOffsprings=function()
 
 CellPlot.Canvas.prototype.SelectOffsprings=function()
 {
-	for (var c=0; c<cellnum;c++)
-	  signedcolors[c]=graycolor;
+	//for (var c=0; c<cellnum;c++)
+	//  signedcolors[c]=graycolor;
 	spring=[];
 	for (var c=0; c<selected_cellids.length;c++){   
 		cname=cellnames[selected_cellids[c]];
