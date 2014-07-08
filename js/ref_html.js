@@ -40,7 +40,7 @@ function onChangeGene(id)
 //		type: 'text/javascript'}).appendTo('head');
 	document.cellplot.tree.LoadData();
 	//document.cellplot.control.Reset();
-	document.cellplot.control.ClearColor();
+	document.cellplot.canvas.onDraw();
 	$("#genetitle").text(genenames[id]+"	@	"+genefilenames[id]);
 //	onSetting();		
 }
