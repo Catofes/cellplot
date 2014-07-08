@@ -41,7 +41,7 @@ function onChangeGene(id)
 	document.cellplot.tree.LoadData();
 	document.cellplot.control.Reset();
 	$("#genetitle").text(genenames[id-1]+"	@	"+genefilenames[id-1]);
-	onSetting();		
+	//onSetting();		
 }
 
 window.onresize=function(){
