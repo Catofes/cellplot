@@ -4,11 +4,11 @@ function onSetting()
 	if(window.settinghidden){
 		$('#htmlSetting').css('height', 'auto');
 		var autoHeight=$('#htmlSetting').height();
-		$('#htmlSetting').height('0px').animate({"height":autoHeight},"slow",function(){document.cellplot.canvas.controls.handleResize();});
+		$('#htmlSetting').height('0px').animate({"height":autoHeight},"fast",function(){document.cellplot.canvas.controls.handleResize();});
 		window.settinghidden=false;
 	}   
 	else{
-		$('#htmlSetting').animate({"height":"0px"},"slow",function(){document.cellplot.canvas.controls.handleResize();});
+		$('#htmlSetting').animate({"height":"0px"},"fast",function(){document.cellplot.canvas.controls.handleResize();});
 		window.settinghidden=true;
 	}
 };
