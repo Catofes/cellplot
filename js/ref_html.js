@@ -1,4 +1,25 @@
 window.settinghidden=true;
+function onLoad(){
+	reg = new RegExp("(^|\\?|&)refid=([^&]*)(\\s|&|$)", "i");
+	if(reg.test(location.href))
+	  reg = unescape(RegExp.$2.replace(/\+/g, " ")); 
+	refid=10;
+	switch(reg){
+		case "15":
+			refid=15;
+			break;
+		case "200":
+			refid=200;
+			break;
+	}
+
+	url="./ajaxfolder/refmove_"+refid+"/refmove_"+refid+"_info.js";
+	$('<script>').attr({
+		id: 'info',
+		src: url,
+		type: 'text/javascript'}).appendTo('head');
+
+}
 function onSetting()
 {
 	if(window.settinghidden){
@@ -32,29 +53,35 @@ function onInsertSelect()
 function onChangeGene(id)
 {
 	geneid=id;
-//	$("#info").remove();
-//	url="./ajaxfolder/"+id+"/"+id+"_info.js";
-//	$('<script>').attr({
-//		id: 'info',
-//		src: url,
-//		type: 'text/javascript'}).appendTo('head');
+	//	$("#info").remove();
+	//	url="./ajaxfolder/"+id+"/"+id+"_info.js";
+	//	$('<script>').attr({
+	//		id: 'info',
+	//		src: url,
+	//		type: 'text/javascript'}).appendTo('head');
 	document.cellplot.tree.LoadData();
 	//document.cellplot.control.Reset();
-//	document.cellplot.canvas.onDraw();
+	//	document.cellplot.canvas.onDraw();
 	if(document.cellplot.canvas.bygeneexp)
 	  document.cellplot.control.ColorbyGeneExp();
 	$("#genetitle").text(genenames[id]+"	@	"+genefilenames[id]);
-//	onSetting();		
+	//	onSetting();		
 }
 
 function onChangeRef(id)
 {
 	refid=id;
+	$("#info").remove();
+	url="./ajaxfolder/refmove_"+id+"/refmove_"+id+"_info.js";
+	$('<script>').attr({
+		id: 'info',
+		src: url,
+		type: 'text/javascript'}).appendTo('head');
 	document.cellplot.tree.LoadData();
 	document.cellplot.control.Reset();
-	onSetting();
+	//onSetting();
 }
-
+onLoad();
 window.onresize=function(){
 	document.cellplot.canvas.controls.handleResize();
 }

@@ -129,6 +129,9 @@ CellPlot.Canvas=function(container)
 	controls=this.controls;
 	camera=this.camera;
 	scene=this.scene;
+
+	this.animateduringtime=500;
+	this.animatestarttime=0;
 	//Setup other variates
 
 	this.lines=[];
@@ -157,6 +160,7 @@ CellPlot.Canvas=function(container)
 		event.preventDefault();
 		mouse_move.x = ( (event.clientX-absleft + $(window).scrollLeft()) / container.clientWidth ) * 2 - 1;
 		mouse_move.y = - ( (event.clientY- abstop+ $(window).scrollTop()) / container.clientHeight ) * 2 + 1;
+		document.cellplot.canvas.animatestarttime=new Date().getTime(); 
 	}
 
 	//Mouse Click function
@@ -220,6 +224,7 @@ CellPlot.Canvas.prototype.ClearLines=function(){
 	for (l=0; l<this.lines.length; l++)
 	  this.scene.remove(this.lines[l]);
 	this.lines=[];
+	this.animatestarttime=new Date().getTime();
 }
 
 //Function of Remove Triaggles from Scene
@@ -227,6 +232,7 @@ CellPlot.Canvas.prototype.ClearTriaggles=function(){
 	for (f=0; f<this.triangles.length;f++)
 	  scene.remove(this.triangles[f]);
 	this.triangles=[];
+	this.animatestarttime=new Date().getTime();
 }
 
 //Function of Remove Select Object from Scene
@@ -361,9 +367,9 @@ CellPlot.Canvas.prototype.DrawTriaggles=function(p_locs,f_pids,fs,colorcode)
 		this.triangles[triid].material.opacity=0.2;
 		this.triangles[triid].prop="triangle";
 	}
-
+	this.animatestarttime=new Date().getTime();
 }
-
+/*
 CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one element: color the same, []:back to original color
 {
 	for (c=0; c<givencellids.length;c++){
@@ -381,7 +387,7 @@ CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one eleme
 		}//if (cellid_tocurrent[cid]>0)  
 	}//for (var c=0; c<givencellids.length;c++)
 }
-
+*/
 
 //Function of Draw Object from Data
 CellPlot.Canvas.prototype.onDraw=function()
@@ -398,11 +404,15 @@ CellPlot.Canvas.prototype.onDraw=function()
 	  this.ByGeneExp();
 	if (this.showseg)
 	  this.ShowSegmentation();
+	this.animatestarttime=new Date().getTime();
 }
 
 CellPlot.Canvas.prototype.onAnimate=function()
 {
 	window.requestAnimationFrame(this.onAnimate.bind(this));
+	nowtime=new Date().getTime();
+	if(nowtime-this.animatestarttime>this.animateduringtime)
+	  return;
 	//requestAnimationFrame(this.onAnimate);
 	//Update Renderer
 	this.renderer.clear();
@@ -482,6 +492,7 @@ CellPlot.Canvas.prototype.ColorCells=function(givencellids,colorpara)//one eleme
 			}
 		}
 	}
+	this.animatestarttime=new Date().getTime();
 }
 CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighbor of selected cells, color the neigbors, link a line, and display their names
 {
@@ -521,6 +532,7 @@ CellPlot.Canvas.prototype.GetNeighbors=function()// for the neighbor of selected
 	}
 	CP.info.ChangeElement("neighbors_of_select_cell","neighbors of select cell:   "+todisplay);	
 	var othercells=this.Allother_currentcells(allneibhorcellids);
+	this.animatestarttime=new Date().getTime();
 	//Transpcells(othercells,0.5);
 	//Transpcells(allneibhorcellids,1);
 }
@@ -546,6 +558,7 @@ CellPlot.Canvas.prototype.SelectNeighbors=function()
 			this.Addtoselected(waittoselect[k]);
 		}
 	}
+	this.animatestarttime=new Date().getTime();
 }
 
 CellPlot.Canvas.prototype.Allother_currentcells=function(givencellids) // all the other current cells ids on the screen

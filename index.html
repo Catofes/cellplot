@@ -14,10 +14,10 @@
 <script src="./js/d3js/d3.v3.min.js"></script>
 <script src="./js/ref_cellplot.js"></script>
 <script src="./ajaxfolder/script_all.js"></script>
-<script id=info src="./ajaxfolder/refmove_10/refmove_10_info.js"></script>
+<!--<script id=info src="./ajaxfolder/refmove_10/refmove_10_info.js"></script>-->
 <script src="./ajaxfolder/avegeneexp.js"></script>
-<script src="./js/ref_varibles.js"></script>
 <script src="./js/ref_html.js"></script>
+<script src="./js/ref_varibles.js"></script>
 
 </head>
 <body>
@@ -34,7 +34,14 @@
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="#">ShowAverageGeneExpression</a></li>
+				<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">ShowAverageGeneExpression<span class="caret"></span></a>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#" onclick="onChangeRef(10)">refmove_10</a></li>
+					<li><a href="#" onclick="onChangeRef(15)">refmove_15</a></li>
+					<li><a href="#" onclick="onChangeRef(200)">refmove_200</a></li>
+				</ul>
+				</li>
 				<li><a href="showall.html">ShowAllInfo</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
@@ -117,7 +124,6 @@
 </body>
 <script>
 geneid=0;
-refid=10;
 document.cellplot= new CellPlot(document.getElementById("cellplot"));
 onInsertSelect();
 </script>
