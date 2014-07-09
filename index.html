@@ -35,16 +35,17 @@
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">ShowAverageGeneExpression<span class="caret"></span></a>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Show Average Gene Expression<span class="caret"></span></a>
 				<ul class="dropdown-menu" role="menu">
 					<li><a href="#" onclick="onChangeRef(10)">refmove_10</a></li>
 					<li><a href="#" onclick="onChangeRef(15)">refmove_15</a></li>
 					<li><a href="#" onclick="onChangeRef(200)">refmove_200</a></li>
 				</ul>
 				</li>
-				<li><a href="showall.html">ShowAllInfo</a></li>
+				<li><a href="showall.html">Show All Info</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg">How to Use</a></li>
 				<li><a onclick="onSetting()" >Change Genes</a></li>
 			</ul>
 
@@ -120,6 +121,42 @@
 		Provide by Catofes</a>
 	</p>
 </div>
+</div>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Use Manual</h4>
+		</div>
+		<div class="modal-body">
+			<h4>Introduction:</h4>
+			<p>This is bla bla bla ...</p>
+			<br>
+			<h4>Visualization Part:</h4>
+			<img src="./img/Visual.png" alt="Visualization Part" class="img-thumbnail" width="60%">
+			<p>This part shows cells. Drag to move camera. Click to select cell.</p>
+			<br>
+			<h4>Children Tree Part:</h4>
+			<img src="./img/Tree.png" alt="Children Tree Part" class="img-thumbnail" width="60%">
+			<p>This part shows cells and there's child. Drag to move. Click to select. Click with ctrl button can jump to the time when the cell first appears. </p>
+			<br>
+			<h4>Control Part:</h4>
+			<img src="./img/Control.png" alt="Control Part" class="img-thumbnail" width="60%">
+			<p>This part is function part. The first slide can change time. The first line buttons are playing controls. The second line buttons are Color controls. They can color the cell by celltype or gene expression. The third line buttons can show Neighbor or offsprings of selected cells. The last line can select cells by names(Space to split) or neighbor's information. Below this is a color palette which can color selected cells.</p> 
+			<br>
+			<h4>Info Part:</h4>
+			<img src="./img/Info.png" alt="Info Part" class="img-thumbnail" width="60%">
+			<p>This part shows information of selected cells.</p>
+			<br>
+			<h4>Gene Change Part:</h4>
+			<img src="./img/Gene.png" alt="Gene Part" class="img-thumbnail" width="60%">
+			<p>This part can change tracking genes. Click "Change Genes" button on the right of top and then select gene from opened table.</p>
+			<br>
+
+		<div>
+	</div>
+  </div>
 </div>
 </body>
 <script>

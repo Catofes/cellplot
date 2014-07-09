@@ -1335,7 +1335,7 @@ CellPlot.Button=function(container)
 	this.addbutton(this.buttoncontainer["Option"],"Show Vseg",function(){CP.control.ShowSeg()});
 	this.addbutton(this.buttoncontainer["Option"],"Show Offsprings",function(){CP.control.ShowOffsprings()});
 	this.addbuttonclass("Select");
-	this.addinput(this.buttoncontainer["Select"],"Select by name","Select by Name.Space to split","Select by Name",function(){CP.control.SelectbyName(this.inputclass.value)});
+	this.addinput(this.buttoncontainer["Select"],"Select by name","Space to split","Select by Name",function(){CP.control.SelectbyName(this.inputclass.value)});
 	this.addbutton(this.buttoncontainer["Select by name"],"Select Offsprings",function(){CP.control.SelectOffsprings()});
 	this.addbutton(this.buttoncontainer["Select by name"],"Select Neighbors",function(){CP.control.SelectNeighbors()});
 	this.addbuttonclass("ColorPanel");
